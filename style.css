@@ -1,0 +1,144 @@
+/* ---------- GENERAL ---------- */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    scroll-behavior:smooth;
+}
+
+body{
+
+    background:#ffffff;
+    color:#111111;
+
+    font-family:
+    Helvetica,
+    Arial,
+    sans-serif;
+
+    line-height:1.6;
+}
+
+/* ---------- FRONT PAGE ---------- */
+
+.frontpage{
+
+    height:100vh;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:center;
+
+    align-items:center;
+
+    text-align:center;
+}
+
+h1{
+
+    font-size:6rem;
+
+    font-weight:300;
+
+    letter-spacing:0.15em;
+
+    margin-bottom:30px;
+}
+
+.subtitle{
+
+    font-size:1rem;
+
+    color:#666;
+
+    margin-bottom:70px;
+
+    line-height:1.8;
+}
+
+/* ---------- MENU ---------- */
+
+nav{
+
+    display:flex;
+
+    gap:45px;
+
+    flex-wrap:wrap;
+}
+
+nav a{
+
+    text-decoration:none;
+
+    color:#111;
+
+    text-transform:uppercase;
+
+    letter-spacing:0.15em;
+
+    font-size:.9rem;
+
+    transition:.3s;
+}
+
+nav a:hover{
+
+    opacity:.35;
+}
+
+/* ---------- CONTENT ---------- */
+
+section{
+
+    max-width:900px;
+
+    margin:auto;
+
+    padding:140px 40px;
+}
+
+section h2{
+
+    font-size:2rem;
+
+    font-weight:300;
+
+    margin-bottom:25px;
+}
+
+section p{
+
+    color:#444;
+
+    font-size:1.05rem;
+}
+
+/* ---------- MOBILE ---------- */
+
+@media(max-width:700px){
+
+h1{
+
+    font-size:3rem;
+}
+
+nav{
+
+    flex-direction:column;
+
+    gap:20px;
+}
+
+section{
+
+    padding:90px 30px;
+}
+
+}
