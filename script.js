@@ -1,22 +1,36 @@
 const canvas = document.getElementById("pixel-world");
-const context = canvas.getContext("2d");
+const ctx = canvas.getContext("2d");
 
 let width = window.innerWidth;
 let height = window.innerHeight;
 
-let mouseX = width / 2;
-let mouseY = height / 2;
+let mouseX = -1000;
+let mouseY = -1000;
 
-const pixelSize = 8;
-const ballCount = 12;
+const particles = [];
 
-const balls = [];
+/*
+  Pas deze waarden later aan:
+
+  spacing:
+  afstand tussen de pixels
+
+  pixelSize:
+  grootte van iedere pixel
+
+  mouseRadius:
+  gebied rond de muis waarin pixels bewegen
+*/
+
+const spacing = 32;
+const pixelSize = 5;
+const mouseRadius = 150;
 
 function resizeCanvas() {
+  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+
   width = window.innerWidth;
   height = window.innerHeight;
-
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
 
   canvas.width = Math.floor(width * pixelRatio);
   canvas.height = Math.floor(height * pixelRatio);
@@ -24,103 +38,118 @@ function resizeCanvas() {
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
 
-  context.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-  context.imageSmoothingEnabled = false;
+  ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  ctx.imageSmoothingEnabled = false;
+
+  createParticles();
 }
 
-function randomVelocity() {
-  const speed = 0.6 + Math.random() * 1.2;
-  return Math.random() > 0.5 ? speed : -speed;
+function createParticles() {
+  particles.length = 0;
+
+  for (let x = 0; x <= width + spacing; x += spacing) {
+    for (let y = 0; y <= height + spacing; y += spacing) {
+      particles.push({
+        homeX: x,
+        homeY: y,
+
+        x: x,
+        y: y,
+
+        velocityX: 0,
+        velocityY: 0,
+
+        driftOffset: Math.random() * Math.PI * 2,
+        driftSpeed: 0.005 + Math.random() * 0.008
+      });
+    }
+  }
 }
 
-function createBall() {
-  return {
-    x: Math.random() * width,
-    y: Math.random() * height,
+function updateParticle(particle, time) {
+  const dx = particle.x - mouseX;
+  const dy = particle.y - mouseY;
 
-    vx: randomVelocity(),
-    vy: randomVelocity(),
+  const distance = Math.sqrt(dx * dx + dy * dy);
 
-    size: pixelSize * (1 + Math.floor(Math.random() * 2))
-  };
+  /*
+    Pixels worden van de muis weggeduwd.
+  */
+
+  if (distance < mouseRadius && distance > 0) {
+    const force = (mouseRadius - distance) / mouseRadius;
+    const directionX = dx / distance;
+    const directionY = dy / distance;
+
+    particle.velocityX += directionX * force * 1.4;
+    particle.velocityY += directionY * force * 1.4;
+  }
+
+  /*
+    Zachte autonome pixel drift.
+  */
+
+  const driftX =
+    Math.sin(time * particle.driftSpeed + particle.driftOffset) * 2;
+
+  const driftY =
+    Math.cos(time * particle.driftSpeed + particle.driftOffset) * 2;
+
+  const targetX = particle.homeX + driftX;
+  const targetY = particle.homeY + driftY;
+
+  /*
+    Pixels worden terug naar hun oorspronkelijke positie getrokken.
+  */
+
+  particle.velocityX += (targetX - particle.x) * 0.025;
+  particle.velocityY += (targetY - particle.y) * 0.025;
+
+  /*
+    Wrijving voorkomt dat de pixels eindeloos blijven bewegen.
+  */
+
+  particle.velocityX *= 0.88;
+  particle.velocityY *= 0.88;
+
+  particle.x += particle.velocityX;
+  particle.y += particle.velocityY;
 }
 
-for (let index = 0; index < ballCount; index += 1) {
-  balls.push(createBall());
+function drawParticle(particle) {
+  /*
+    Posities worden afgerond zodat de beweging hoekig en pixelachtig blijft.
+  */
+
+  const x = Math.round(particle.x);
+  const y = Math.round(particle.y);
+
+  ctx.fillStyle = "rgba(48, 48, 48, 0.48)";
+  ctx.fillRect(x, y, pixelSize, pixelSize);
 }
 
-window.addEventListener("resize", resizeCanvas);
+function animate(time) {
+  ctx.clearRect(0, 0, width, height);
+
+  particles.forEach((particle) => {
+    updateParticle(particle, time);
+    drawParticle(particle);
+  });
+
+  requestAnimationFrame(animate);
+}
 
 window.addEventListener("pointermove", (event) => {
   mouseX = event.clientX;
   mouseY = event.clientY;
 });
 
-function updateBall(ball) {
-  const deltaX = ball.x - mouseX;
-  const deltaY = ball.y - mouseY;
+window.addEventListener("pointerleave", () => {
+  mouseX = -1000;
+  mouseY = -1000;
+});
 
-  const distanceSquared = deltaX * deltaX + deltaY * deltaY;
-  const interactionRadius = 170;
-  const radiusSquared = interactionRadius * interactionRadius;
-
-  if (distanceSquared < radiusSquared && distanceSquared > 1) {
-    const distance = Math.sqrt(distanceSquared);
-    const force = (interactionRadius - distance) / interactionRadius;
-
-    ball.vx += (deltaX / distance) * force * 0.08;
-    ball.vy += (deltaY / distance) * force * 0.08;
-  }
-
-  const maximumSpeed = 2.8;
-
-  ball.vx = Math.max(-maximumSpeed, Math.min(maximumSpeed, ball.vx));
-  ball.vy = Math.max(-maximumSpeed, Math.min(maximumSpeed, ball.vy));
-
-  ball.x += ball.vx;
-  ball.y += ball.vy;
-
-  if (ball.x <= 0 || ball.x + ball.size >= width) {
-    ball.vx *= -1;
-    ball.x = Math.max(0, Math.min(width - ball.size, ball.x));
-  }
-
-  if (ball.y <= 0 || ball.y + ball.size >= height) {
-    ball.vy *= -1;
-    ball.y = Math.max(0, Math.min(height - ball.size, ball.y));
-  }
-}
-
-function drawPixelGrid() {
-  context.fillStyle = "rgba(48, 48, 48, 0.045)";
-
-  for (let x = 0; x < width; x += 32) {
-    for (let y = 0; y < height; y += 32) {
-      context.fillRect(x, y, 2, 2);
-    }
-  }
-}
-
-function drawBall(ball) {
-  const snappedX = Math.round(ball.x / pixelSize) * pixelSize;
-  const snappedY = Math.round(ball.y / pixelSize) * pixelSize;
-
-  context.fillStyle = "rgba(48, 48, 48, 0.62)";
-  context.fillRect(snappedX, snappedY, ball.size, ball.size);
-}
-
-function animate() {
-  context.clearRect(0, 0, width, height);
-
-  drawPixelGrid();
-
-  balls.forEach((ball) => {
-    updateBall(ball);
-    drawBall(ball);
-  });
-
-  window.requestAnimationFrame(animate);
-}
+window.addEventListener("resize", resizeCanvas);
 
 resizeCanvas();
-animate();
+requestAnimationFrame(animate);
