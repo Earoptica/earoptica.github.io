@@ -87,33 +87,30 @@ nav {
   flex-wrap: wrap;
 }
 
-nav a {
-  display: inline-block;
+nav a{
 
-  padding: 7px 9px;
+    color:white;
 
-  color: #303030;
-  text-decoration: none;
-  text-transform: uppercase;
+    text-decoration:none;
 
-  font-family: "Press Start 2P", monospace;
-  font-size: 0.58rem;
-  line-height: 1.5;
+    text-transform:uppercase;
 
-  transition:
-    background-color 0.08s linear,
-    color 0.08s linear,
-    transform 0.08s linear;
+    font-family:"Press Start 2P", monospace;
+
+    font-size:.58rem;
+
+    padding:7px 9px;
+
+    transition:.15s;
+
 }
 
-nav a:hover,
-nav a:focus-visible {
-  background: #004cff;
-  color: #ffffff;
+nav a:hover{
 
-  transform: translate(-2px, -2px);
+    background:#0047FF;
 
-  box-shadow: 3px 3px 0 #303030;
+    color:white;
+
 }
 
 /* ------------------------------
