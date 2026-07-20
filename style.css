@@ -12,16 +12,14 @@ html {
   scroll-behavior: smooth;
 }
 
-body {
-  min-height: 100vh;
+body{
 
-  background: #a7c978;
-  color: #303030;
+    background:#00FF00;
 
-  font-family: "IBM Plex Sans", Arial, sans-serif;
-  line-height: 1.65;
+    color:#303030;
 
-  overflow-x: hidden;
+    font-family:"IBM Plex Sans",sans-serif;
+
 }
 
 /* ------------------------------
