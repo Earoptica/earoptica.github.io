@@ -12,15 +12,15 @@ html {
   scroll-behavior: smooth;
 }
 
-body{
-
-    background:#00FF00;
-
-    color:#303030;
-
-    font-family:"IBM Plex Sans",sans-serif;
-
+body {
+  min-height: 100vh;
+  background: rgb(0, 255, 0);
+  color: #303030;
+  font-family: "IBM Plex Sans", Arial, sans-serif;
+  line-height: 1.65;
+  overflow-x: hidden;
 }
+
 
 /* ------------------------------
    INTERACTIEVE ACHTERGROND
