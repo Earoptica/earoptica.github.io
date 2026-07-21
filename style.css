@@ -276,3 +276,29 @@ section p {
     transition: none;
   }
 }
+
+/* CONTACT EMAIL */
+
+.email {
+
+    display:inline-block;
+
+    color:#303030;
+
+    text-decoration:none;
+
+    padding:4px 6px;
+
+    user-select:text;
+
+    transition:all .15s ease;
+
+}
+
+.email:hover{
+
+    background:#0047FF;
+
+    color:white;
+
+}
