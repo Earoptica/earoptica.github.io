@@ -9,20 +9,7 @@ let mouseY = -1000;
 
 const particles = [];
 
-/*
-  Pas deze waarden later aan:
-
-  spacing:
-  afstand tussen de pixels
-
-  pixelSize:
-  grootte van iedere pixel
-
-  mouseRadius:
-  gebied rond de muis waarin pixels bewegen
-*/
-
-const spacing = 32;
+const spacing = 28;
 const pixelSize = 5;
 const mouseRadius = 150;
 
@@ -52,15 +39,11 @@ function createParticles() {
       particles.push({
         homeX: x,
         homeY: y,
-
-        x: x,
-        y: y,
-
+        x,
+        y,
         velocityX: 0,
         velocityY: 0,
-
-        driftOffset: Math.random() * Math.PI * 2,
-        driftSpeed: 0.005 + Math.random() * 0.008
+        offset: Math.random() * Math.PI * 2
       });
     }
   }
@@ -69,63 +52,40 @@ function createParticles() {
 function updateParticle(particle, time) {
   const dx = particle.x - mouseX;
   const dy = particle.y - mouseY;
-
   const distance = Math.sqrt(dx * dx + dy * dy);
-
-  /*
-    Pixels worden van de muis weggeduwd.
-  */
 
   if (distance < mouseRadius && distance > 0) {
     const force = (mouseRadius - distance) / mouseRadius;
-    const directionX = dx / distance;
-    const directionY = dy / distance;
 
-    particle.velocityX += directionX * force * 1.4;
-    particle.velocityY += directionY * force * 1.4;
+    particle.velocityX += (dx / distance) * force * 1.25;
+    particle.velocityY += (dy / distance) * force * 1.25;
   }
 
-  /*
-    Zachte autonome pixel drift.
-  */
-
-  const driftX =
-    Math.sin(time * particle.driftSpeed + particle.driftOffset) * 2;
-
-  const driftY =
-    Math.cos(time * particle.driftSpeed + particle.driftOffset) * 2;
+  const driftX = Math.sin(time * 0.001 + particle.offset) * 1.5;
+  const driftY = Math.cos(time * 0.001 + particle.offset) * 1.5;
 
   const targetX = particle.homeX + driftX;
   const targetY = particle.homeY + driftY;
 
-  /*
-    Pixels worden terug naar hun oorspronkelijke positie getrokken.
-  */
+  particle.velocityX += (targetX - particle.x) * 0.03;
+  particle.velocityY += (targetY - particle.y) * 0.03;
 
-  particle.velocityX += (targetX - particle.x) * 0.025;
-  particle.velocityY += (targetY - particle.y) * 0.025;
-
-  /*
-    Wrijving voorkomt dat de pixels eindeloos blijven bewegen.
-  */
-
-  particle.velocityX *= 0.88;
-  particle.velocityY *= 0.88;
+  particle.velocityX *= 0.86;
+  particle.velocityY *= 0.86;
 
   particle.x += particle.velocityX;
   particle.y += particle.velocityY;
 }
 
 function drawParticle(particle) {
-  /*
-    Posities worden afgerond zodat de beweging hoekig en pixelachtig blijft.
-  */
+  ctx.fillStyle = "rgba(0, 0, 0, 0.52)";
 
-  const x = Math.round(particle.x);
-  const y = Math.round(particle.y);
-
-  ctx.fillStyle = "rgba(48, 48, 48, 0.48)";
-  ctx.fillRect(x, y, pixelSize, pixelSize);
+  ctx.fillRect(
+    Math.round(particle.x),
+    Math.round(particle.y),
+    pixelSize,
+    pixelSize
+  );
 }
 
 function animate(time) {
