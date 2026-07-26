@@ -122,9 +122,8 @@ nav a:focus-visible {
   background: #0047ff;
   color: #ffffff;
 
-  transform: translate(-4px, 5px);
-
-  box-shadow: 4px -4px 0 #000000;
+transform: translate(-5px, -5px);
+box-shadow: 5px 5px 0 #000000;
 }
 
 
