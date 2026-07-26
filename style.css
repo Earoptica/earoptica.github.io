@@ -47,8 +47,6 @@ section {
 
 header{
 
-    ...
-
 }
 
 header,
@@ -64,54 +62,21 @@ section {
 /* ------------------------------
    INTERACTIEVE ACHTERGROND
 ------------------------------ */
-
 #pixel-world {
   position: fixed;
   inset: 0;
   width: 100%;
   height: 100%;
-  z-index: -1;
+  z-index: 0;
   pointer-events: none;
   image-rendering: pixelated;
 }
 
-/* ------------------------------
-   HEADER
------------------------------- */
-
-header {
-
-  position: fixed;
-
-  top: 0;
-  left: 0;
-
-  width: 100%;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  padding: 22px 35px;
-
-  background: #000000;
-
-  border-bottom: 1px solid #202020;
-
-  z-index: 100;
-
-}
-
-.logo {
-
-    color:white;
-
-    font-family:"Press Start 2P", monospace;
-
-    font-size:0.78rem;
-
-    letter-spacing:.08em;
-
+   header,
+.hero,
+section {
+  position: relative;
+  z-index: 1;
 }
 
 /* ------------------------------
