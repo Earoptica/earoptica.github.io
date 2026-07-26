@@ -105,3 +105,111 @@ window.addEventListener("resize", resizeCanvas);
 
 resizeCanvas();
 draw();
+
+
+/* =========================================
+   HERO TITLE — SELECTION + PIXEL EMISSION
+========================================= */
+
+const heroTitle = document.getElementById("hero-title");
+
+let titleTimeout = null;
+
+function emitTitlePixels() {
+  if (!heroTitle) return;
+
+  const rect = heroTitle.getBoundingClientRect();
+
+  const numberOfPixels = 22;
+
+  for (let i = 0; i < numberOfPixels; i += 1) {
+    const pixel = document.createElement("div");
+
+    pixel.className = "title-pixel";
+
+    /*
+      Kies een willekeurige positie
+      binnen de titel.
+    */
+
+    const startX =
+      rect.left +
+      Math.random() * rect.width;
+
+    const startY =
+      rect.top +
+      Math.random() * rect.height;
+
+    /*
+      Pixels bewegen in verschillende
+      richtingen vanuit de titel.
+    */
+
+    const angle = Math.random() * Math.PI * 2;
+
+    const distance =
+      20 + Math.random() * 70;
+
+    const moveX =
+      Math.cos(angle) * distance;
+
+    const moveY =
+      Math.sin(angle) * distance;
+
+    pixel.style.left = `${startX}px`;
+    pixel.style.top = `${startY}px`;
+
+    pixel.style.setProperty(
+      "--move-x",
+      `${moveX}px`
+    );
+
+    pixel.style.setProperty(
+      "--move-y",
+      `${moveY}px`
+    );
+
+    document.body.appendChild(pixel);
+
+    pixel.addEventListener(
+      "animationend",
+      () => {
+        pixel.remove();
+      }
+    );
+  }
+}
+
+function activateHeroTitle() {
+  if (!heroTitle) return;
+
+  heroTitle.classList.add("is-selected");
+
+  emitTitlePixels();
+
+  clearTimeout(titleTimeout);
+
+  titleTimeout = setTimeout(() => {
+    heroTitle.classList.remove("is-selected");
+  }, 700);
+}
+
+/*
+  Desktop:
+  hover activeert de titel.
+*/
+
+heroTitle?.addEventListener(
+  "mouseenter",
+  activateHeroTitle
+);
+
+/*
+  Smartphone / tablet:
+  tap activeert hetzelfde effect.
+*/
+
+heroTitle?.addEventListener(
+  "pointerdown",
+  activateHeroTitle
+);
