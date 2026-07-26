@@ -439,3 +439,22 @@ section p {
   /* harde schaduw rechts + onder */
   box-shadow: 8px 8px 0 #000000 !important;
 }
+
+   /* MENU SELECTION */
+
+nav a {
+  display: inline-block;
+  position: relative;
+}
+
+nav a:hover,
+nav a:focus-visible {
+  background: #0047ff !important;
+  color: #ffffff !important;
+
+  /* iets naar links en beneden */
+  transform: translate(-4px, 5px) !important;
+
+  /* harde pixelschaduw */
+  box-shadow: 4px -4px 0 #000000;
+}
