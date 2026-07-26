@@ -415,3 +415,27 @@ section p {
   background: #0047ff;
   color: #ffffff;
 }
+
+   /* ==================================
+   FINAL SELECTION INTERACTIONS
+   ================================== */
+
+#hero-title {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+
+#hero-title:hover,
+#hero-title:focus-visible,
+#hero-title.is-selected {
+
+  background: #0047ff !important;
+  color: #ffffff !important;
+
+  /* links + boven */
+  transform: translate(-12px, -12px) !important;
+
+  /* harde schaduw rechts + onder */
+  box-shadow: 8px 8px 0 #000000 !important;
+}
