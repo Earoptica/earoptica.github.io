@@ -4,96 +4,117 @@ const ctx = canvas.getContext("2d");
 let width = window.innerWidth;
 let height = window.innerHeight;
 
-let mouseX = -1000;
-let mouseY = -1000;
+let mouseX = -9999;
+let mouseY = -9999;
 
-const particles = [];
+const pixels = [];
 
-const spacing = 28;
-const pixelSize = 5;
+const spacing = 18;
+const pixelSize = 14;
 const mouseRadius = 150;
+const whiteRadius = 55;
 
 function resizeCanvas() {
-  const pixelRatio = Math.min(window.devicePixelRatio || 1, 2);
+  const ratio = Math.min(window.devicePixelRatio || 1, 2);
 
   width = window.innerWidth;
   height = window.innerHeight;
 
-  canvas.width = Math.floor(width * pixelRatio);
-  canvas.height = Math.floor(height * pixelRatio);
+  canvas.width = width * ratio;
+  canvas.height = height * ratio;
 
   canvas.style.width = `${width}px`;
   canvas.style.height = `${height}px`;
 
-  ctx.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
+  ctx.setTransform(ratio, 0, 0, ratio, 0, 0);
   ctx.imageSmoothingEnabled = false;
 
-  createParticles();
+  createPixels();
 }
 
-function createParticles() {
-  particles.length = 0;
+function createPixels() {
+  pixels.length = 0;
 
-  for (let x = 0; x <= width + spacing; x += spacing) {
-    for (let y = 0; y <= height + spacing; y += spacing) {
-      particles.push({
+  for (let x = 0; x < width + spacing; x += spacing) {
+    for (let y = 0; y < height + spacing; y += spacing) {
+      pixels.push({
         homeX: x,
         homeY: y,
         x,
         y,
-        velocityX: 0,
-        velocityY: 0,
-        offset: Math.random() * Math.PI * 2
+        vx: 0,
+        vy: 0
       });
     }
   }
 }
 
-function updateParticle(particle, time) {
-  const dx = particle.x - mouseX;
-  const dy = particle.y - mouseY;
+function updatePixel(pixel) {
+  const dx = pixel.x - mouseX;
+  const dy = pixel.y - mouseY;
   const distance = Math.sqrt(dx * dx + dy * dy);
 
   if (distance < mouseRadius && distance > 0) {
     const force = (mouseRadius - distance) / mouseRadius;
 
-    particle.velocityX += (dx / distance) * force * 1.25;
-    particle.velocityY += (dy / distance) * force * 1.25;
+    pixel.vx += (dx / distance) * force * 1.8;
+    pixel.vy += (dy / distance) * force * 1.8;
   }
 
-  const driftX = Math.sin(time * 0.001 + particle.offset) * 1.5;
-  const driftY = Math.cos(time * 0.001 + particle.offset) * 1.5;
+  pixel.vx += (pixel.homeX - pixel.x) * 0.025;
+  pixel.vy += (pixel.homeY - pixel.y) * 0.025;
 
-  const targetX = particle.homeX + driftX;
-  const targetY = particle.homeY + driftY;
+  pixel.vx *= 0.88;
+  pixel.vy *= 0.88;
 
-  particle.velocityX += (targetX - particle.x) * 0.03;
-  particle.velocityY += (targetY - particle.y) * 0.03;
-
-  particle.velocityX *= 0.86;
-  particle.velocityY *= 0.86;
-
-  particle.x += particle.velocityX;
-  particle.y += particle.velocityY;
+  pixel.x += pixel.vx;
+  pixel.y += pixel.vy;
 }
 
-function drawParticle(particle) {
-  ctx.fillStyle = "rgba(0, 0, 0, 0.52)";
+function drawBackgroundLayers() {
+  ctx.fillStyle = "#000000";
+  ctx.fillRect(0, 0, width, height);
+
+  const gradient = ctx.createRadialGradient(
+    mouseX,
+    mouseY,
+    0,
+    mouseX,
+    mouseY,
+    whiteRadius
+  );
+
+  gradient.addColorStop(0, "#ffffff");
+  gradient.addColorStop(1, "rgba(255,255,255,0)");
+
+  ctx.fillStyle = gradient;
+  ctx.fillRect(
+    mouseX - whiteRadius,
+    mouseY - whiteRadius,
+    whiteRadius * 2,
+    whiteRadius * 2
+  );
+}
+
+function drawPixel(pixel) {
+  ctx.fillStyle = "#00ff00";
 
   ctx.fillRect(
-    Math.round(particle.x),
-    Math.round(particle.y),
+    Math.round(pixel.x),
+    Math.round(pixel.y),
     pixelSize,
     pixelSize
   );
 }
 
-function animate(time) {
+function animate() {
   ctx.clearRect(0, 0, width, height);
 
-  particles.forEach((particle) => {
-    updateParticle(particle, time);
-    drawParticle(particle);
+  drawBackgroundLayers();
+
+  pixels.forEach((pixel) => {
+    updatePixel(pixel);
+    drawPixel(pixel);
   });
 
   requestAnimationFrame(animate);
@@ -105,11 +126,11 @@ window.addEventListener("pointermove", (event) => {
 });
 
 window.addEventListener("pointerleave", () => {
-  mouseX = -1000;
-  mouseY = -1000;
+  mouseX = -9999;
+  mouseY = -9999;
 });
 
 window.addEventListener("resize", resizeCanvas);
 
 resizeCanvas();
-requestAnimationFrame(animate);
+animate();
