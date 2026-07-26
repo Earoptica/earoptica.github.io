@@ -394,3 +394,27 @@ section p {
 
   background: black;
 }
+
+#hero-title {
+  display: inline-block;
+  cursor: pointer;
+
+  transition:
+    transform 0.12s steps(2),
+    background-color 0.12s linear,
+    color 0.12s linear;
+}
+
+#hero-title:hover,
+#hero-title:focus-visible,
+#hero-title.is-selected {
+  background: #0047ff;
+  color: #ffffff;
+
+  transform: translate(3mm, 3mm);
+}
+
+::selection {
+  background: #0047ff;
+  color: #ffffff;
+}
