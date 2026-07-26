@@ -387,14 +387,6 @@ section p {
 
 /* normale browser selection */
 
-::selection {
-  background: #0047ff;
-  color: #ffffff;
-}
-
-  background: black;
-}
-
 #hero-title {
   display: inline-block;
   cursor: pointer;
@@ -402,7 +394,8 @@ section p {
   transition:
     transform 0.12s steps(2),
     background-color 0.12s linear,
-    color 0.12s linear;
+    color 0.12s linear,
+    box-shadow 0.12s steps(2);
 }
 
 #hero-title:hover,
@@ -411,7 +404,11 @@ section p {
   background: #0047ff;
   color: #ffffff;
 
-  transform: translate(3mm, 3mm);
+  /* migratie naar linksboven */
+  transform: translate(-3mm, -3mm);
+
+  /* harde pixelschaduw naar rechtsonder */
+  box-shadow: 6px 6px 0 #000000;
 }
 
 ::selection {
