@@ -1,6 +1,6 @@
-/* ------------------------------
-   BASIS
------------------------------- */
+/* ==================================
+   EAROPTICA — BASE STYLES
+   ================================== */
 
 * {
   margin: 0;
@@ -13,64 +13,41 @@ html {
 }
 
 body {
+  min-height: 100vh;
 
-    background: rgb(0,255,0);
+  background: #00ff00;
+  color: #303030;
 
-    color:#303030;
+  font-family: "IBM Plex Sans", Arial, sans-serif;
+  line-height: 1.65;
 
-    overflow-x:hidden;
-
+  overflow-x: hidden;
 }
 
-/* ---------- PIXEL CANVAS ---------- */
+
+/* ==================================
+   PIXEL CANVAS
+   tijdelijk uitgeschakeld / voorbereid
+   ================================== */
 
 #pixel-world {
   position: fixed;
   inset: 0;
-  width: 100%;
-  height: 100%;
-  z-index: 0;
-  pointer-events: none;
-  image-rendering: pixelated;
-}
 
-/* ---------- DIT PLAK JE HIER ---------- */
-
-header,
-.hero,
-section {
-  position: relative;
-  z-index: 1;
-}
-
-/* ---------- HEADER ---------- */
-
-header{
-
-}
-
-header,
-.hero,
-section {
-  position: relative;
-  z-index: 1;
-}
-
-
-
-
-/* ------------------------------
-   INTERACTIEVE ACHTERGROND
------------------------------- */
-#pixel-world {
-  position: fixed;
-  inset: 0;
   width: 100vw;
   height: 100vh;
+
   z-index: 0;
+
   pointer-events: none;
+
   image-rendering: pixelated;
 }
+
+
+/* ==================================
+   CONTENT ABOVE CANVAS
+   ================================== */
 
 header,
 .hero,
@@ -79,138 +56,237 @@ section {
   z-index: 1;
 }
 
-/* ------------------------------
-   NAVIGATIE
------------------------------- */
+
+/* ==================================
+   HEADER / NAVIGATION
+   ================================== */
+
+header {
+  width: 100%;
+
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+
+  padding: 24px 34px;
+
+  background: transparent;
+}
+
+
+/* logo currently unused */
+
+.logo {
+  display: none;
+}
+
+
+/* ==================================
+   NAVIGATION
+   ================================== */
 
 nav {
   display: flex;
   gap: 12px;
+
   flex-wrap: wrap;
 }
 
-nav a{
+nav a {
+  display: inline-block;
+  position: relative;
 
-    color:white;
+  padding: 7px 9px;
 
-    text-decoration:none;
+  color: #303030;
 
-    text-transform:uppercase;
+  text-decoration: none;
+  text-transform: uppercase;
 
-    font-family:"Press Start 2P", monospace;
+  font-family: "Press Start 2P", monospace;
+  font-size: 0.58rem;
+  line-height: 1.5;
 
-    font-size:.58rem;
-
-    padding:7px 9px;
-
-    transition:.15s;
-
+  transition:
+    transform 0.1s steps(2),
+    background-color 0.1s linear,
+    color 0.1s linear,
+    box-shadow 0.1s steps(2);
 }
 
-nav a:hover{
 
-    background:#0047FF;
+/* menu selection */
 
-    color:white;
+nav a:hover,
+nav a:focus-visible {
+  background: #0047ff;
+  color: #ffffff;
 
+  transform: translate(-4px, 5px);
+
+  box-shadow: 4px -4px 0 #000000;
 }
 
-/* ------------------------------
+
+/* ==================================
    HERO
------------------------------- */
+   ================================== */
 
 .hero {
   min-height: 100vh;
 
   display: flex;
   flex-direction: column;
+
   justify-content: center;
-  align-items: center;
+  align-items: flex-start;
 
-  padding: 130px 30px 80px;
+  padding: 120px 34px 80px;
 
-  text-align: center;
+  text-align: left;
 }
 
-.hero h1 {
-  max-width: 100%;
 
-  margin: 28px 0;
+/* small intro text */
 
+.small {
   font-family: "Press Start 2P", monospace;
 
- font-size: clamp(2.2rem, 8vw, 7rem);
-  line-height: 1.18;
-  font-weight: normal;
+  font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+
+  line-height: 1.8;
 
   letter-spacing: 0.03em;
-
-  overflow-wrap: anywhere;
-
-  transition:
-    background-color 0.08s linear,
-    color 0.08s linear,
-    box-shadow 0.08s linear;
 }
 
-.hero h1:hover {
-  background: #004cff;
-  color: #ffffff;
 
-  box-shadow:
-    12px 0 0 #004cff,
-    -12px 0 0 #004cff;
-}
+/* date */
 
-.small,
 .date {
   font-family: "Press Start 2P", monospace;
 
   font-size: clamp(0.55rem, 1.2vw, 0.75rem);
+
   line-height: 1.8;
+
   letter-spacing: 0.03em;
 }
 
-/* ------------------------------
-   CONTENT
------------------------------- */
+
+/* ==================================
+   HERO TITLE
+   ================================== */
+
+#hero-title {
+  display: inline-block;
+  position: relative;
+
+  margin: 28px 0;
+
+  color: #303030;
+
+  font-family: "Press Start 2P", monospace;
+
+  font-size: clamp(1.8rem, 6vw, 5rem);
+
+  line-height: 1.2;
+
+  font-weight: normal;
+
+  letter-spacing: 0.03em;
+
+  cursor: pointer;
+
+  transition:
+    transform 0.12s steps(2),
+    background-color 0.12s linear,
+    color 0.12s linear,
+    box-shadow 0.12s steps(2);
+}
+
+
+/* slightly smaller edition number */
+
+#hero-title span {
+  font-size: 0.7em;
+}
+
+
+/* HERO TITLE SELECTION */
+
+#hero-title:hover,
+#hero-title:focus-visible,
+#hero-title.is-selected {
+  background: #0047ff;
+
+  color: #ffffff;
+
+  /* move to upper left */
+
+  transform: translate(-12px, -12px);
+
+  /* hard shadow to lower right */
+
+  box-shadow: 8px 8px 0 #000000;
+}
+
+
+/* ==================================
+   CONTENT SECTIONS
+   ================================== */
 
 section {
-  width: min(920px, calc(100% - 48px));
-  min-height: 72vh;
+  width: min(920px, calc(100% - 68px));
 
-  margin: 0 auto;
-  padding: 140px 30px;
+  min-height: 70vh;
 
-  position: relative;
-  z-index: 1;
+  margin: 0;
+
+  padding: 120px 34px;
 }
+
+
+/* headings */
 
 section h2 {
   display: inline-block;
 
-  margin-bottom: 42px;
+  margin-bottom: 40px;
+
   padding: 7px 9px;
 
+  color: #303030;
+
   font-family: "Press Start 2P", monospace;
+
   font-size: clamp(1rem, 3vw, 1.8rem);
+
   line-height: 1.5;
+
   font-weight: normal;
 
   transition:
-    background-color 0.08s linear,
-    color 0.08s linear,
-    transform 0.08s linear;
+    transform 0.1s steps(2),
+    background-color 0.1s linear,
+    color 0.1s linear,
+    box-shadow 0.1s steps(2);
 }
+
+
+/* heading hover */
 
 section h2:hover {
-  background: #004cff;
+  background: #0047ff;
+
   color: #ffffff;
 
-  transform: translate(-3px, -3px);
+  transform: translate(-5px, -5px);
 
-  box-shadow: 5px 5px 0 #303030;
+  box-shadow: 5px 5px 0 #000000;
 }
+
+
+/* body text */
 
 section p {
   max-width: 760px;
@@ -218,134 +294,60 @@ section p {
   margin-bottom: 28px;
 
   font-size: clamp(1rem, 1.7vw, 1.14rem);
+
+  line-height: 1.7;
 }
 
-/* Blauwe tekstselectie met de muis */
 
-::selection {
-  background: #004cff;
-  color: #ffffff;
-}
-
-/* ------------------------------
-   MOBIEL
------------------------------- */
-
-@media (max-width: 760px) {
-  header {
-    position: relative;
-
-    align-items: flex-start;
-    gap: 24px;
-
-    padding: 20px;
-  }
-
-  nav {
-    max-width: 160px;
-    justify-content: flex-end;
-  }
-
-  nav a {
-    font-size: 0.5rem;
-  }
-
-  .hero {
-    min-height: 86vh;
-    padding-top: 80px;
-  }
-
-  .hero h1 {
-    font-size: clamp(1.8rem, 10vw, 3rem);
-  }
-
-  section {
-    width: calc(100% - 30px);
-    padding: 100px 14px;
-  }
-}
-
-/* Minder beweging voor bezoekers die dat verkiezen */
-
-@media (prefers-reduced-motion: reduce) {
-  html {
-    scroll-behavior: auto;
-  }
-
-  nav a,
-  .hero h1,
-  section h2 {
-    transition: none;
-  }
-}
-
-/* CONTACT EMAIL */
+/* ==================================
+   EMAIL
+   ================================== */
 
 .email {
-
-    display:inline-block;
-
-    color:#303030;
-
-    text-decoration:none;
-
-    padding:4px 6px;
-
-    user-select:text;
-
-    transition:all .15s ease;
-
-}
-
-.email:hover{
-
-    background:#0047FF;
-
-    color:white;
-
-}
-
-#pixel-world {
-  position: fixed;
-  inset: 0;
-
-  width: 100vw;
-  height: 100vh;
-
-  z-index: 9999;
-
-  pointer-events: none;
-
-   /* =========================
-   EAROPTICA TITLE INTERACTION
-========================= */
-
-#hero-title {
-  position: relative;
   display: inline-block;
 
-  cursor: default;
+  color: #303030;
+
+  text-decoration: none;
+
+  padding: 4px 6px;
+
+  user-select: text;
 
   transition:
-    transform 0.12s steps(2),
-    background-color 0.12s linear,
-    color 0.12s linear,
-    box-shadow 0.12s linear;
+    transform 0.1s steps(2),
+    background-color 0.1s linear,
+    color 0.1s linear,
+    box-shadow 0.1s steps(2);
 }
 
-/* active selection state */
-
-#hero-title.is-selected {
+.email:hover,
+.email:focus-visible {
   background: #0047ff;
+
   color: #ffffff;
 
-  transform: translate(3mm, 3mm);
+  transform: translate(-4px, -4px);
 
-  box-shadow:
-    -3mm -3mm 0 #000000;
+  box-shadow: 4px 4px 0 #000000;
 }
 
-/* emitted pixels */
+
+/* ==================================
+   TEXT SELECTION
+   ================================== */
+
+::selection {
+  background: #0047ff;
+
+  color: #ffffff;
+}
+
+
+/* ==================================
+   TITLE PIXEL EMISSION
+   voorbereid voor later
+   ================================== */
 
 .title-pixel {
   position: fixed;
@@ -367,6 +369,7 @@ section p {
 @keyframes titlePixelEmit {
   0% {
     opacity: 1;
+
     transform: translate(0, 0);
   }
 
@@ -385,76 +388,61 @@ section p {
   }
 }
 
-/* normale browser selection */
 
-#hero-title {
-  display: inline-block;
-  cursor: pointer;
-
-  transition:
-    transform 0.12s steps(2),
-    background-color 0.12s linear,
-    color 0.12s linear,
-    box-shadow: 6px 6px 0 #000;
-}
-
-#hero-title:hover,
-#hero-title:focus-visible,
-#hero-title.is-selected {
-  background: #0047ff;
-  color: #ffffff;
-
-  /* migratie naar linksboven */
-  transform: translate(-3mm, -3mm);
-
-  /* harde pixelschaduw naar rechtsonder */
-  box-shadow: 6px 6px 0 #000000;
-}
-
-::selection {
-  background: #0047ff;
-  color: #ffffff;
-}
-
-   /* ==================================
-   FINAL SELECTION INTERACTIONS
+/* ==================================
+   MOBILE
    ================================== */
 
-#hero-title {
-  display: inline-block;
-  position: relative;
-  cursor: pointer;
+@media (max-width: 760px) {
+
+  header {
+    padding: 18px 20px;
+  }
+
+  nav {
+    gap: 8px;
+  }
+
+  nav a {
+    font-size: 0.5rem;
+
+    padding: 6px 7px;
+  }
+
+  .hero {
+    min-height: 85vh;
+
+    padding: 90px 20px 60px;
+  }
+
+  #hero-title {
+    font-size: clamp(1.6rem, 9vw, 3rem);
+  }
+
+  section {
+    width: 100%;
+
+    padding: 90px 20px;
+  }
+
 }
 
-#hero-title:hover,
-#hero-title:focus-visible,
-#hero-title.is-selected {
 
-  background: #0047ff !important;
-  color: #ffffff !important;
+/* ==================================
+   REDUCED MOTION
+   ================================== */
 
-  /* links + boven */
-  transform: translate(-12px, -12px) !important;
+@media (prefers-reduced-motion: reduce) {
 
-  /* harde schaduw rechts + onder */
-  box-shadow: 8px 8px 0 #000000 !important;
-}
+  html {
+    scroll-behavior: auto;
+  }
 
-   /* MENU SELECTION */
+  nav a,
+  #hero-title,
+  section h2,
+  .email {
+    transition: none;
+  }
 
-nav a {
-  display: inline-block;
-  position: relative;
-}
-
-nav a:hover,
-nav a:focus-visible {
-  background: #0047ff !important;
-  color: #ffffff !important;
-
-  /* iets naar links en beneden */
-  transform: translate(-4px, 5px) !important;
-
-  /* harde pixelschaduw */
-  box-shadow: 4px -4px 0 #000000;
 }
