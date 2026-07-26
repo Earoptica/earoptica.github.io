@@ -395,7 +395,7 @@ section p {
     transform 0.12s steps(2),
     background-color 0.12s linear,
     color 0.12s linear,
-    box-shadow 0.12s steps(2);
+    box-shadow: 6px 6px 0 #000;
 }
 
 #hero-title:hover,
