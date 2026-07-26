@@ -316,5 +316,81 @@ section p {
 
   pointer-events: none;
 
+   /* =========================
+   EAROPTICA TITLE INTERACTION
+========================= */
+
+#hero-title {
+  position: relative;
+  display: inline-block;
+
+  cursor: default;
+
+  transition:
+    transform 0.12s steps(2),
+    background-color 0.12s linear,
+    color 0.12s linear,
+    box-shadow 0.12s linear;
+}
+
+/* active selection state */
+
+#hero-title.is-selected {
+  background: #0047ff;
+  color: #ffffff;
+
+  transform: translate(3mm, 3mm);
+
+  box-shadow:
+    -3mm -3mm 0 #000000;
+}
+
+/* emitted pixels */
+
+.title-pixel {
+  position: fixed;
+
+  width: 8px;
+  height: 8px;
+
+  background: #0047ff;
+
+  pointer-events: none;
+
+  z-index: 999;
+
+  image-rendering: pixelated;
+
+  animation: titlePixelEmit 650ms steps(6) forwards;
+}
+
+@keyframes titlePixelEmit {
+  0% {
+    opacity: 1;
+    transform: translate(0, 0);
+  }
+
+  70% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0;
+
+    transform:
+      translate(
+        var(--move-x),
+        var(--move-y)
+      );
+  }
+}
+
+/* normale browser selection */
+
+::selection {
+  background: #0047ff;
+  color: #ffffff;
+}
+
   background: black;
 }
