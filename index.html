@@ -1,165 +1,472 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-
 <head>
-  <meta charset="UTF-8">
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#ffffff" />
   <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
+    name="description"
+    content="Earoptica ’27 — City-Wide Festival for Media Arts, Ghent, March–June 2027."
+  />
 
-  <title>Earoptica</title>
+  <title>Earoptica ’27</title>
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-  <link
-    href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500&family=Press+Start+2P&display=swap"
-    rel="stylesheet"
-  >
-
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
+  <script src="script.js" defer></script>
 </head>
 
 <body>
 
-  <!-- INTERACTIEVE PIXELACHTERGROND -->
-  <!-- <canvas id="pixel-world"></canvas> -->
-  <!-- HEADER -->
-  <header>
+  <header class="site-header" id="top">
 
+    <div class="site-title">
+      EAROPTICA ’27
+    </div>
 
-    <nav>
-      <a href="#info">About</a>
-      <a href="#artists">Artists</a>
-      <a href="#events">Events</a>
-      <a href="#partners">Partners</a>
-      <a href="#contact">Contact</a>
-    </nav>
+    <div class="site-meta">
+      <span>CITY-WIDE FESTIVAL FOR MEDIA ARTS</span>
+      <span>GHENT — MARCH / JUNE 2027</span>
+    </div>
+
   </header>
 
-  <!-- HERO -->
-  <main class="hero">
 
-    <p class="small">
-      City-Wide Festival for Media Arts
-    </p>
+  <main>
 
-   <h1 id="hero-title" tabindex="0">
-  EAROPTICA <span>'27</span>
-</h1>
+    <section class="intro">
 
-    <p class="date">
-      Ghent · March–June 2027
-    </p>
+      <h1>
+        Art as a civic organism.
+      </h1>
+
+      <p>
+        Earoptica explores how art can intervene in technological,
+        ecological and societal transformation.
+      </p>
+
+    </section>
+
+
+    <nav class="bands" aria-label="Earoptica navigation">
+
+
+      <!-- PROGRAMME -->
+
+      <section
+        class="band"
+        data-label="PROGRAMME"
+        data-font="sans"
+        data-speed="42"
+        data-direction="-1"
+      >
+
+        <div class="band-under">
+
+          <div class="band-under-inner">
+
+            <a href="#programme">
+              Programme
+            </a>
+
+            <span>Exhibitions</span>
+            <span>Screenings</span>
+            <span>Talks</span>
+
+          </div>
+
+        </div>
+
+        <canvas class="band-canvas"></canvas>
+
+        <div class="band-hit"></div>
+
+      </section>
+
+
+
+      <!-- ARTISTS -->
+
+      <section
+        class="band"
+        data-label="ARTISTS"
+        data-font="serif"
+        data-speed="31"
+        data-direction="1"
+      >
+
+        <div class="band-under">
+
+          <div class="band-under-inner">
+
+            <a href="#artists">
+              JODI
+            </a>
+
+            <span>+ participating artists</span>
+
+          </div>
+
+        </div>
+
+        <canvas class="band-canvas"></canvas>
+
+        <div class="band-hit"></div>
+
+      </section>
+
+
+
+      <!-- LOCATIONS -->
+
+      <section
+        class="band"
+        data-label="LOCATIONS"
+        data-font="mono"
+        data-speed="24"
+        data-direction="-1"
+      >
+
+        <div class="band-under">
+
+          <div class="band-under-inner">
+
+            <a href="#locations">
+              S.M.A.K.
+            </a>
+
+            <span>KASK</span>
+            <span>LUCA</span>
+            <span>GHENT</span>
+
+          </div>
+
+        </div>
+
+        <canvas class="band-canvas"></canvas>
+
+        <div class="band-hit"></div>
+
+      </section>
+
+
+
+      <!-- RESEARCH -->
+
+      <section
+        class="band"
+        data-label="RESEARCH"
+        data-font="condensed"
+        data-speed="50"
+        data-direction="1"
+      >
+
+        <div class="band-under">
+
+          <div class="band-under-inner">
+
+            <a href="#research">
+              Technology
+            </a>
+
+            <span>Ecology</span>
+            <span>Public Space</span>
+            <span>Digital Culture</span>
+
+          </div>
+
+        </div>
+
+        <canvas class="band-canvas"></canvas>
+
+        <div class="band-hit"></div>
+
+      </section>
+
+
+
+      <!-- ABOUT -->
+
+      <section
+        class="band"
+        data-label="ABOUT"
+        data-font="wide"
+        data-speed="20"
+        data-direction="-1"
+      >
+
+        <div class="band-under">
+
+          <div class="band-under-inner">
+
+            <a href="#about">
+              About Earoptica
+            </a>
+
+            <span>Partners</span>
+            <span>Contact</span>
+
+          </div>
+
+        </div>
+
+        <canvas class="band-canvas"></canvas>
+
+        <div class="band-hit"></div>
+
+      </section>
+
+
+
+      <!-- LAB -->
+
+      <section
+        class="band"
+        data-label="LAB"
+        data-font="pixel"
+        data-speed="58"
+        data-direction="1"
+      >
+
+        <div class="band-under">
+
+          <div class="band-under-inner">
+
+            <a href="#lab">
+              LAB 01
+            </a>
+
+            <span>Pixel Migration</span>
+            <span>Browser Experiments</span>
+
+          </div>
+
+        </div>
+
+        <canvas class="band-canvas"></canvas>
+
+        <div class="band-hit"></div>
+
+      </section>
+
+    </nav>
+
+
+    <div class="touch-note">
+      TOUCH A BAND TO OPEN IT · TAP THE REVEALED LINK TO ENTER
+    </div>
+
+
+
+    <!-- CONTENT -->
+
+
+    <section class="content">
+
+
+      <article
+        class="content-block"
+        id="programme"
+      >
+
+        <div class="content-index">
+          01
+        </div>
+
+        <div>
+
+          <h2>
+            Programme
+          </h2>
+
+          <p class="content-lead">
+            Exhibitions, screenings, seminars, artist talks,
+            publications and public interventions unfold across
+            Ghent from March to June 2027.
+          </p>
+
+          <p>
+            The complete programme will be added here as dates
+            and locations are confirmed.
+          </p>
+
+        </div>
+
+      </article>
+
+
+
+      <article
+        class="content-block"
+        id="artists"
+      >
+
+        <div class="content-index">
+          02
+        </div>
+
+        <div>
+
+          <h2>
+            Artists
+          </h2>
+
+          <p class="content-lead">
+            JODI — Joan Heemskerk &amp; Dirk Paesmans.
+          </p>
+
+          <p>
+            Further participating artists and contributors
+            will be announced as the programme develops.
+          </p>
+
+        </div>
+
+      </article>
+
+
+
+      <article
+        class="content-block"
+        id="locations"
+      >
+
+        <div class="content-index">
+          03
+        </div>
+
+        <div>
+
+          <h2>
+            Locations
+          </h2>
+
+          <p class="content-lead">
+            Earoptica is conceived as a city-wide festival
+            rather than a single venue exhibition.
+          </p>
+
+          <p>
+            Locations and route information will appear here.
+          </p>
+
+        </div>
+
+      </article>
+
+
+
+      <article
+        class="content-block"
+        id="research"
+      >
+
+        <div class="content-index">
+          04
+        </div>
+
+        <div>
+
+          <h2>
+            Research
+          </h2>
+
+          <p class="content-lead">
+            Technology is not treated as neutral infrastructure,
+            but as a social field that can be observed,
+            questioned and reclaimed.
+          </p>
+
+          <p>
+            Earoptica connects media art, ecological transformation,
+            public space and digital self-determination.
+          </p>
+
+        </div>
+
+      </article>
+
+
+
+      <article
+        class="content-block"
+        id="about"
+      >
+
+        <div class="content-index">
+          05
+        </div>
+
+        <div>
+
+          <h2>
+            About
+          </h2>
+
+          <p class="content-lead">
+            Earoptica ’27 is a city-wide festival for media arts
+            in Ghent.
+          </p>
+
+          <p>
+            The project brings artists, cultural institutions,
+            researchers and citizens together around technological,
+            ecological and societal transformation.
+          </p>
+
+        </div>
+
+      </article>
+
+
+
+      <article
+        class="content-block"
+        id="lab"
+      >
+
+        <div class="content-index">
+          06
+        </div>
+
+        <div>
+
+          <h2>
+            Lab
+          </h2>
+
+          <p class="content-lead">
+            Earoptica Lab is the experimental layer of the project:
+            browser works, interface studies and prototypes
+            developed alongside the festival.
+          </p>
+
+          <p>
+            LAB 01 — Pixel Migration can later be linked here
+            as an autonomous digital experiment.
+          </p>
+
+        </div>
+
+      </article>
+
+
+    </section>
 
   </main>
 
-  <!-- ABOUT -->
-  <section id="info">
 
-    <h2>About</h2>
+  <footer class="site-footer">
 
-    <p>
-      Earoptica – City-Wide Festival for Media Arts is a city-wide festival
-      unfolding across Ghent from March to June 2027. Through exhibitions,
-      screenings, seminars, artist talks, publications and public interventions,
-      the festival brings together artists, cultural institutions, researchers
-      and citizens around technological innovation, ecological transition,
-      democratic resilience and digital culture.
-    </p>
+    <a href="#top">
+      EAROPTICA ’27 ↑
+    </a>
 
-    <p>
-      Earoptica starts from the understanding that technology is never neutral.
-      It is shaped by the systems, companies and power structures that develop
-      and govern it. While the early internet and Net.Art opened unprecedented
-      possibilities for expression, experimentation and global connection,
-      today's digital landscape is increasingly defined by platform control,
-      data extraction and automated decision-making.
-    </p>
+    <span>
+      GHENT
+    </span>
 
-    <p>
-      The festival explores how artists can reclaim technology as a civic and
-      cultural medium. Rather than accepting digital infrastructures as fixed
-      realities, Earoptica presents artistic practices that investigate
-      alternative, more open and more human technological futures.
-    </p>
+  </footer>
 
-    <p>
-      As a non-linear festival, Earoptica moves throughout the city, connecting
-      museums, universities, alternative art spaces and the public realm. With a
-      central presentation by Net.Art pioneers JODI.org at S.M.A.K., alongside
-      exhibitions, lectures and interdisciplinary collaborations, Earoptica
-      positions art not only as a reflection of society, but as an active civic
-      force capable of shaping the systems that define our collective future.
-    </p>
-
-  </section>
-
-  <!-- ARTISTS -->
-  <section id="artists">
-
-    <h2>Artists</h2>
-
-    <p>
-      Jodi.org
-      Jerry Galle
-      Frank Liefooghe
-      More artists rtists will be announced soon.
-    </p>
-
-  </section>
-
-  <!-- EVENTS -->
-  <section id="events">
-
-    <h2>Events</h2>
-
-    <p>
-      Jodi.org march 2027 SMAK Gent
-      Groupshow Off space Gent
-      Screenings
-      Audio part Vooruit Gent
-      More info on programme coming soon.
-    </p>
-
-  </section>
-
-  <!-- PARTNERS -->
-  <section id="partners">
-
-    <h2>Partners</h2>
-
-    <p>
-      Partners will be announced soon.
-    </p>
-
-  </section>
-
-  <!-- CONTACT -->
-  <section id="contact">
-
-    <h2>Contact</h2>
-
-    <p>
-      General enquiries
-    </p>
-
-    <p>
-      <a
-        class="email"
-        href="mailto:b33ld3nl3z3r@gmail.com"
-      >
-        b33ld3nl3z3r@gmail.com
-      </a>
-    </p>
-
-  </section>
-
-  <!-- SCRIPT ALTIJD ONDERAAN -->
-<!-- <script src="script.js"></script> -->
 
 </body>
-
 </html>
