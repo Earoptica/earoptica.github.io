@@ -14,6 +14,7 @@ html,
 body {
   width: 100%;
   height: 100%;
+
   margin: 0;
   padding: 0;
 }
@@ -33,60 +34,55 @@ body {
 
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
+
+  user-select: none;
 }
 
 
-/* FULL SCREEN */
+/* ----------------------------------
+   FULL SCREEN INTERFACE
+---------------------------------- */
 
-.bands {
+.interface {
+  position: relative;
+
   width: 100vw;
 
   height: 100vh;
   height: 100dvh;
 
-  display: flex;
-  flex-direction: column;
-
   overflow: hidden;
+
+  background: #ffffff;
 }
 
 
-/* BAND */
+/* ----------------------------------
+   INFORMATION UNDER THE CANVAS
+---------------------------------- */
 
-.band {
-  position: relative;
-
-  flex: 1 1 0;
-
-  min-height: 0;
-
-  width: 100%;
-
-  overflow: hidden;
-
-  isolation: isolate;
-
-  border: 0;
-
-  margin: 0;
-  padding: 0;
-
-  touch-action: pan-y;
-}
-
-
-/* INFORMATION UNDER ACTIVE BAND */
-
-.band-under {
+.underlays {
   position: absolute;
 
   inset: 0;
 
   z-index: 1;
 
-  display: flex;
+  display: grid;
 
-  align-items: flex-end;
+  grid-template-rows:
+    repeat(6, 1fr);
+
+  background: #ffffff;
+}
+
+
+.band-under {
+  position: relative;
+
+  min-height: 0;
+
+  overflow: hidden;
 
   background: #ffffff;
 
@@ -95,12 +91,16 @@ body {
 
 
 .band-under-content {
-  width: 100%;
+  position: absolute;
 
-  min-height: 46%;
+  left: 0;
+  right: 0;
+  bottom: 0;
+
+  min-height: 48%;
 
   padding:
-    10px
+    8px
     clamp(14px, 2vw, 34px);
 
   display: grid;
@@ -156,9 +156,11 @@ body {
 }
 
 
-/* CANVAS */
+/* ----------------------------------
+   ONE FULL SCREEN CANVAS
+---------------------------------- */
 
-.band-canvas {
+#bands-canvas {
   position: absolute;
 
   inset: 0;
@@ -172,24 +174,68 @@ body {
 
   border: 0;
 
+  margin: 0;
+  padding: 0;
+
   pointer-events: none;
 }
 
 
-/* INTERACTION */
+/* ----------------------------------
+   INVISIBLE HIT LAYER
+---------------------------------- */
 
-.band-hit {
+.hit-layer {
   position: absolute;
 
   inset: 0;
 
   z-index: 3;
 
+  display: grid;
+
+  grid-template-rows:
+    repeat(6, 1fr);
+
+  margin: 0;
+  padding: 0;
+
   cursor: pointer;
+
+  touch-action: none;
 }
 
 
-/* MOBILE */
+.band-hit {
+  position: relative;
+
+  min-height: 0;
+
+  margin: 0;
+  padding: 0;
+
+  outline: none;
+
+  background: transparent;
+}
+
+
+/* ----------------------------------
+   KEYBOARD
+---------------------------------- */
+
+.band-hit:focus-visible {
+  outline:
+    1px solid
+    rgba(255, 255, 255, 0.7);
+
+  outline-offset: -3px;
+}
+
+
+/* ----------------------------------
+   MOBILE
+---------------------------------- */
 
 @media (max-width: 760px) {
 
@@ -201,7 +247,7 @@ body {
     gap: 12px;
 
     padding:
-      8px
+      7px
       14px;
 
     font-size: 9px;
@@ -220,11 +266,13 @@ body {
 }
 
 
-/* TOUCH */
+/* ----------------------------------
+   TOUCH
+---------------------------------- */
 
 @media (hover: none), (pointer: coarse) {
 
-  .band-hit {
+  .hit-layer {
     cursor: default;
   }
 
