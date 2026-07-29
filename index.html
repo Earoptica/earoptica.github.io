@@ -13,13 +13,13 @@
 
   <meta
     name="theme-color"
-    content="#ffffff"
+    content="#000000"
   >
 
   <title>Earoptica ’27</title>
 
 
-  <!-- MODERN TYPEFACES -->
+  <!-- FONTS -->
 
   <link
     rel="preconnect"
@@ -55,32 +55,22 @@
 <body>
 
 
-  <main class="bands">
+  <main class="interface">
 
 
-    <!-- PROGRAMME -->
+    <!--
+      WHITE INFORMATION LAYERS
+
+      These sit underneath the canvas.
+      They only become visible where
+      the active band is physically lifted.
+    -->
 
 
-    <section
-      class="band"
-
-      data-label="PROGRAMME"
-
-      data-font="archivo"
-
-      data-speed="40"
-
-      data-direction="-1"
-
-      data-bg="#ff0000"
-
-      data-text="#000000"
-
-      data-href="programme.html"
-    >
+    <div class="underlays">
 
 
-      <div class="band-under">
+      <section class="band-under">
 
         <div class="band-under-content">
 
@@ -98,43 +88,11 @@
 
         </div>
 
-      </div>
-
-
-      <canvas class="band-canvas"></canvas>
-
-      <div class="band-hit"></div>
-
-
-    </section>
+      </section>
 
 
 
-
-
-    <!-- ARTISTS -->
-
-
-    <section
-      class="band"
-
-      data-label="ARTISTS"
-
-      data-font="space"
-
-      data-speed="31"
-
-      data-direction="1"
-
-      data-bg="#0000ff"
-
-      data-text="#000000"
-
-      data-href="artists.html"
-    >
-
-
-      <div class="band-under">
+      <section class="band-under">
 
         <div class="band-under-content">
 
@@ -152,43 +110,11 @@
 
         </div>
 
-      </div>
-
-
-      <canvas class="band-canvas"></canvas>
-
-      <div class="band-hit"></div>
-
-
-    </section>
+      </section>
 
 
 
-
-
-    <!-- LOCATIONS -->
-
-
-    <section
-      class="band"
-
-      data-label="LOCATIONS"
-
-      data-font="condensed"
-
-      data-speed="24"
-
-      data-direction="-1"
-
-      data-bg="#ffff00"
-
-      data-text="#000000"
-
-      data-href="locations.html"
-    >
-
-
-      <div class="band-under">
+      <section class="band-under">
 
         <div class="band-under-content">
 
@@ -206,43 +132,11 @@
 
         </div>
 
-      </div>
-
-
-      <canvas class="band-canvas"></canvas>
-
-      <div class="band-hit"></div>
-
-
-    </section>
+      </section>
 
 
 
-
-
-    <!-- RESEARCH -->
-
-
-    <section
-      class="band"
-
-      data-label="RESEARCH"
-
-      data-font="inter"
-
-      data-speed="46"
-
-      data-direction="1"
-
-      data-bg="#000000"
-
-      data-text="#ffffff"
-
-      data-href="research.html"
-    >
-
-
-      <div class="band-under">
+      <section class="band-under">
 
         <div class="band-under-content">
 
@@ -260,43 +154,11 @@
 
         </div>
 
-      </div>
-
-
-      <canvas class="band-canvas"></canvas>
-
-      <div class="band-hit"></div>
-
-
-    </section>
+      </section>
 
 
 
-
-
-    <!-- ABOUT -->
-
-
-    <section
-      class="band"
-
-      data-label="ABOUT"
-
-      data-font="space"
-
-      data-speed="20"
-
-      data-direction="-1"
-
-      data-bg="#ffffff"
-
-      data-text="#000000"
-
-      data-href="about.html"
-    >
-
-
-      <div class="band-under">
+      <section class="band-under">
 
         <div class="band-under-content">
 
@@ -314,43 +176,11 @@
 
         </div>
 
-      </div>
-
-
-      <canvas class="band-canvas"></canvas>
-
-      <div class="band-hit"></div>
-
-
-    </section>
+      </section>
 
 
 
-
-
-    <!-- LAB -->
-
-
-    <section
-      class="band"
-
-      data-label="LAB"
-
-      data-font="mono"
-
-      data-speed="56"
-
-      data-direction="1"
-
-      data-bg="#00ff00"
-
-      data-text="#000000"
-
-      data-href="lab.html"
-    >
-
-
-      <div class="band-under">
+      <section class="band-under">
 
         <div class="band-under-content">
 
@@ -368,15 +198,152 @@
 
         </div>
 
-      </div>
+      </section>
 
 
-      <canvas class="band-canvas"></canvas>
-
-      <div class="band-hit"></div>
+    </div>
 
 
-    </section>
+
+    <!--
+      ONE CANVAS FOR THE ENTIRE INTERFACE
+    -->
+
+
+    <canvas
+      id="bands-canvas"
+      aria-hidden="true"
+    ></canvas>
+
+
+
+    <!--
+      INVISIBLE INTERACTION LAYER
+
+      The data here controls:
+      name
+      font
+      speed
+      direction
+      colour
+      destination
+    -->
+
+
+    <nav
+      class="hit-layer"
+      aria-label="Earoptica navigation"
+    >
+
+
+      <div
+        class="band-hit"
+        role="link"
+        tabindex="0"
+
+        data-label="PROGRAMME"
+        data-font="archivo"
+        data-speed="40"
+        data-direction="-1"
+        data-bg="#ff0000"
+        data-text="#000000"
+        data-href="programme.html"
+
+        aria-label="Programme"
+      ></div>
+
+
+
+      <div
+        class="band-hit"
+        role="link"
+        tabindex="0"
+
+        data-label="ARTISTS"
+        data-font="space"
+        data-speed="31"
+        data-direction="1"
+        data-bg="#0000ff"
+        data-text="#000000"
+        data-href="artists.html"
+
+        aria-label="Artists"
+      ></div>
+
+
+
+      <div
+        class="band-hit"
+        role="link"
+        tabindex="0"
+
+        data-label="LOCATIONS"
+        data-font="condensed"
+        data-speed="24"
+        data-direction="-1"
+        data-bg="#ffff00"
+        data-text="#000000"
+        data-href="locations.html"
+
+        aria-label="Locations"
+      ></div>
+
+
+
+      <div
+        class="band-hit"
+        role="link"
+        tabindex="0"
+
+        data-label="RESEARCH"
+        data-font="inter"
+        data-speed="46"
+        data-direction="1"
+        data-bg="#000000"
+        data-text="#ffffff"
+        data-href="research.html"
+
+        aria-label="Research"
+      ></div>
+
+
+
+      <div
+        class="band-hit"
+        role="link"
+        tabindex="0"
+
+        data-label="ABOUT"
+        data-font="space"
+        data-speed="20"
+        data-direction="-1"
+        data-bg="#ffffff"
+        data-text="#000000"
+        data-href="about.html"
+
+        aria-label="About"
+      ></div>
+
+
+
+      <div
+        class="band-hit"
+        role="link"
+        tabindex="0"
+
+        data-label="LAB"
+        data-font="mono"
+        data-speed="56"
+        data-direction="1"
+        data-bg="#00ff00"
+        data-text="#000000"
+        data-href="lab.html"
+
+        aria-label="Lab"
+      ></div>
+
+
+    </nav>
 
 
   </main>
