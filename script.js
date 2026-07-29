@@ -3,37 +3,87 @@
   "use strict";
 
 
-  let instances = [];
+  /* ----------------------------------
+     BASIC ELEMENTS
+  ---------------------------------- */
 
-  let selectedBand = null;
 
-  let hoverBand = null;
+  const hitLayer =
+    document.querySelector(
+      ".hit-layer"
+    );
+
+
+  const canvas =
+    document.getElementById(
+      "bands-canvas"
+    );
+
+
+  if (
+    !hitLayer
+    ||
+    !canvas
+  ) {
+
+    return;
+
+  }
+
+
+  const ctx =
+    canvas.getContext(
+
+      "2d",
+
+      {
+        alpha: true
+      }
+
+    );
+
+
+  const hitBands =
+    [
+      ...document.querySelectorAll(
+        ".band-hit"
+      )
+    ];
+
 
 
   const prefersReducedMotion =
     window
-      .matchMedia("(prefers-reduced-motion: reduce)")
+      .matchMedia(
+        "(prefers-reduced-motion: reduce)"
+      )
       .matches;
 
 
 
   /* ----------------------------------
-     FONTS
+     FONT SYSTEM
   ---------------------------------- */
 
+
   const FONT_MAP = {
+
 
     archivo: (size) =>
       `400 ${size}px "Archivo Black", Arial, sans-serif`,
 
+
     space: (size) =>
       `700 ${size}px "Space Grotesk", Arial, sans-serif`,
+
 
     condensed: (size) =>
       `900 ${size}px "Barlow Condensed", Arial, sans-serif`,
 
+
     inter: (size) =>
       `800 ${size}px "Inter", Arial, sans-serif`,
+
 
     mono: (size) =>
       `700 ${size}px "IBM Plex Mono", monospace`
@@ -43,225 +93,168 @@
 
 
   /* ----------------------------------
-     FLATTEN EVERYTHING
+     SETTINGS
   ---------------------------------- */
 
-  function flattenAll() {
 
-    for (const band of instances) {
+  /*
+  How strongly the pressure continues
+  through each band above.
 
-      band.mode = "flat";
+  1 = same strength everywhere
+  0.5 = quickly becomes weaker
+  */
 
-      band.pushSource = null;
+  const LIFT_DECAY =
+    0.78;
 
-      band.pointer.active = false;
 
-      band.pointer.targetRadius = 0;
 
-      band.pointer.targetLift = 0;
+  /*
+  Width of the vertical slices.
 
-    }
+  Lower = smoother,
+  but heavier to render.
+  */
 
-  }
+  const SLICE_WIDTH =
+    4;
 
 
 
   /* ----------------------------------
-     STACKED PRESSURE WAVE
+     SCREEN STATE
   ---------------------------------- */
 
-  function createStackWave(
-    activeBand,
-    x,
-    touch = false
-  ) {
 
-    const activeIndex =
-      activeBand.index;
+  let width =
+    1;
 
 
-    for (const band of instances) {
+  let height =
+    1;
 
 
-      /* bands below active band */
-
-      if (band.index > activeIndex) {
-
-        band.mode = "flat";
-
-        band.pushSource = null;
-
-        band.pointer.active = false;
-
-        band.pointer.targetRadius = 0;
-
-        band.pointer.targetLift = 0;
-
-        continue;
-
-      }
+  let bandHeight =
+    1;
 
 
-      const distance =
-        activeIndex - band.index;
+  let dpr =
+    1;
 
 
-
-      /* ACTIVE BAND */
-
-      if (distance === 0) {
-
-        band.mode = "active";
-
-        band.pushSource = null;
-
-        band.pointer.active = true;
-
-        band.pointer.targetX = x;
-
-        band.pointer.targetRadius =
-          band.getTargetRadius(touch);
-
-        band.pointer.targetLift =
-          band.getTargetLift(touch);
-
-        continue;
-
-      }
-
-
-
-      /* BANDS ABOVE */
-
-      band.mode = "pushed";
-
-      band.pointer.active = true;
-
-      band.pointer.targetX = x;
-
-
-
-      /*
-      Pressure becomes weaker
-      as it travels upward.
-      */
-
-      const liftDecay =
-        Math.pow(
-          0.76,
-          distance
-        );
-
-
-      const radiusDecay =
-        Math.pow(
-          0.97,
-          distance
-        );
-
-
-      band.pointer.targetRadius =
-        band.getTargetRadius(touch)
-        *
-        radiusDecay;
-
-
-      band.pointer.targetLift =
-        band.getTargetLift(touch)
-        *
-        liftDecay;
-
-
-
-      /*
-      The band immediately underneath
-      is the physical source pushing
-      through this layer.
-      */
-
-      band.pushSource =
-        instances[
-          band.index + 1
-        ]
-        ||
-        null;
-
-    }
-
-  }
+  let lastTime =
+    performance.now();
 
 
 
   /* ----------------------------------
-     RETURN TO SELECTED STATE
+     SELECTION
   ---------------------------------- */
 
-  function restoreSelectedWave() {
 
-    if (!selectedBand) {
-
-      flattenAll();
-
-      return;
-
-    }
+  let selectedIndex =
+    null;
 
 
-    createStackWave(
+  let selectedX =
+    0;
 
-      selectedBand,
 
-      selectedBand.selectedX,
+  let selectedTouch =
+    false;
 
-      selectedBand.selectedTouch
 
-    );
 
-  }
+  /* ----------------------------------
+     TOUCH / CLICK
+  ---------------------------------- */
+
+
+  let dragStart =
+    null;
+
+
+  let maxDrag =
+    0;
+
+
+
+  /* ----------------------------------
+     ONE GLOBAL WAVE
+
+     This is important.
+
+     All bands now respond to the SAME
+     pressure field.
+
+     So they cannot drift out of sync.
+  ---------------------------------- */
+
+
+  const wave = {
+
+
+    index:
+      null,
+
+
+    targetIndex:
+      null,
+
+
+    x:
+      0,
+
+
+    targetX:
+      0,
+
+
+    lift:
+      0,
+
+
+    targetLift:
+      0,
+
+
+    radius:
+      0,
+
+
+    targetRadius:
+      0
+
+  };
 
 
 
   /* ==================================
-     BAND CLASS
+     BAND SURFACE
   ================================== */
 
-  class MovingBand {
+
+  class BandSurface {
 
 
-    constructor(el, index) {
+    constructor(
+      el,
+      index
+    ) {
 
 
-      this.el = el;
-
-      this.index = index;
-
-
-      this.canvas =
-        el.querySelector(
-          ".band-canvas"
-        );
+      this.el =
+        el;
 
 
-      this.ctx =
-        this.canvas.getContext(
-
-          "2d",
-
-          {
-            alpha: true
-          }
-
-        );
-
-
-      this.hit =
-        el.querySelector(
-          ".band-hit"
-        );
+      this.index =
+        index;
 
 
 
       /* CONTENT */
+
 
       this.label =
         el.dataset.label
@@ -295,320 +288,85 @@
 
       this.speed =
         Number(
+
           el.dataset.speed
+
           ||
+
           30
+
         );
 
 
       this.direction =
         Number(
+
           el.dataset.direction
+
           ||
+
           -1
-        );
-
-
-
-      /* STATE */
-
-      this.mode =
-        "flat";
-
-
-      this.pushSource =
-        null;
-
-
-      this.selectedX =
-        0;
-
-
-      this.selectedTouch =
-        false;
-
-
-
-      /* CANVAS */
-
-      this.w = 0;
-
-      this.h = 0;
-
-
-      this.dpr =
-        Math.min(
-
-          window.devicePixelRatio || 1,
-
-          2
 
         );
+
+
+
+      /* TEXT SCROLL */
+
+
+      this.offset =
+        Math.random()
+        *
+        300;
 
 
       this.fontSize =
-        50;
+        48;
 
 
       this.repeatWidth =
         250;
 
 
-      this.offset =
-        Math.random() * 300;
+      this.unitText =
+        `${this.label}     ·     `;
 
 
 
-      /* PRESSURE POINT */
+      /*
 
-      this.pointer = {
+      Every band gets its own hidden
+      canvas.
 
-        x: 0,
+      This is NOT shown directly.
 
-        y: 0,
+      It is basically the original
+      flat strip containing:
 
-        targetX: 0,
+      colour + text.
 
-        targetY: 0,
+      Then the full-screen canvas
+      bends this complete image.
 
-        radius: 0,
+      */
 
-        targetRadius: 0,
 
-        lift: 0,
-
-        targetLift: 0,
-
-        active: false
-
-      };
-
-
-      this.dragStart =
-        null;
-
-
-      this.maxDrag =
-        0;
-
-
-      this.lastTime =
-        performance.now();
-
-
-
-      /* bind */
-
-      this.onResize =
-        this.onResize.bind(this);
-
-
-      this.onPointerEnter =
-        this.onPointerEnter.bind(this);
-
-
-      this.onPointerMove =
-        this.onPointerMove.bind(this);
-
-
-      this.onPointerLeave =
-        this.onPointerLeave.bind(this);
-
-
-      this.onPointerDown =
-        this.onPointerDown.bind(this);
-
-
-      this.onPointerUp =
-        this.onPointerUp.bind(this);
-
-
-      this.onClick =
-        this.onClick.bind(this);
-
-
-
-      this.bind();
-
-      this.resize();
-
-    }
-
-
-
-    /* ----------------------------------
-       EVENTS
-    ---------------------------------- */
-
-    bind() {
-
-
-      window.addEventListener(
-
-        "resize",
-
-        this.onResize,
-
-        {
-          passive: true
-        }
-
-      );
-
-
-      this.hit.addEventListener(
-        "pointerenter",
-        this.onPointerEnter
-      );
-
-
-      this.hit.addEventListener(
-        "pointermove",
-        this.onPointerMove
-      );
-
-
-      this.hit.addEventListener(
-        "pointerleave",
-        this.onPointerLeave
-      );
-
-
-      this.hit.addEventListener(
-        "pointerdown",
-        this.onPointerDown
-      );
-
-
-      this.hit.addEventListener(
-        "pointerup",
-        this.onPointerUp
-      );
-
-
-      this.hit.addEventListener(
-        "pointercancel",
-        this.onPointerUp
-      );
-
-
-      this.hit.addEventListener(
-        "click",
-        this.onClick
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       RESIZE
-    ---------------------------------- */
-
-    onResize() {
-
-      this.resize();
-
-    }
-
-
-
-    resize() {
-
-
-      const rect =
-        this.el
-          .getBoundingClientRect();
-
-
-      this.w =
-        Math.max(
-
-          1,
-
-          Math.ceil(
-            rect.width
-          )
-
+      this.surface =
+        document.createElement(
+          "canvas"
         );
 
 
-      this.h =
-        Math.max(
+      this.surfaceCtx =
+        this.surface.getContext(
 
-          1,
+          "2d",
 
-          Math.ceil(
-            rect.height
-          )
-
-        );
-
-
-      this.dpr =
-        Math.min(
-
-          window.devicePixelRatio || 1,
-
-          2
+          {
+            alpha: false
+          }
 
         );
-
-
-      this.canvas.width =
-        Math.ceil(
-          this.w * this.dpr
-        );
-
-
-      this.canvas.height =
-        Math.ceil(
-          this.h * this.dpr
-        );
-
-
-      this.canvas.style.width =
-        `${this.w}px`;
-
-
-      this.canvas.style.height =
-        `${this.h}px`;
-
-
-      this.ctx.setTransform(
-
-        this.dpr,
-
-        0,
-
-        0,
-
-        this.dpr,
-
-        0,
-
-        0
-
-      );
-
-
-      this.fontSize =
-        Math.max(
-
-          32,
-
-          Math.min(
-
-            this.h * 0.68,
-
-            this.w * 0.08
-
-          )
-
-        );
-
-
-      this.updateTextMetrics();
 
     }
 
@@ -618,12 +376,18 @@
        FONT
     ---------------------------------- */
 
+
     getFont() {
 
 
       const factory =
-        FONT_MAP[this.fontKey]
+
+        FONT_MAP[
+          this.fontKey
+        ]
+
         ||
+
         FONT_MAP.inter;
 
 
@@ -635,19 +399,84 @@
 
 
 
-    updateTextMetrics() {
+    /* ----------------------------------
+       RESIZE BAND SURFACE
+    ---------------------------------- */
 
 
-      this.ctx.font =
+    resize() {
+
+
+      this.fontSize =
+        Math.max(
+
+          28,
+
+          Math.min(
+
+            bandHeight
+            *
+            0.68,
+
+            width
+            *
+            0.08
+
+          )
+
+        );
+
+
+
+      this.surface.width =
+        Math.ceil(
+
+          width
+          *
+          dpr
+
+        );
+
+
+      this.surface.height =
+        Math.ceil(
+
+          (
+            bandHeight
+            +
+            4
+          )
+
+          *
+
+          dpr
+
+        );
+
+
+
+      this.surfaceCtx
+        .setTransform(
+
+          dpr,
+
+          0,
+
+          0,
+
+          dpr,
+
+          0,
+
+          0
+
+        );
+
+
+
+      this.surfaceCtx.font =
         this.getFont();
 
-
-      const separator =
-        "     ·     ";
-
-
-      this.unitText =
-        `${this.label}${separator}`;
 
 
       this.repeatWidth =
@@ -655,9 +484,11 @@
 
           130,
 
-          this.ctx.measureText(
-            this.unitText
-          ).width
+          this.surfaceCtx
+            .measureText(
+              this.unitText
+            )
+            .width
 
         );
 
@@ -666,785 +497,12 @@
 
 
     /* ----------------------------------
-       POINTER POSITION
+       TEXT MOVEMENT
     ---------------------------------- */
 
-    localPoint(event) {
 
+    update(dt) {
 
-      const rect =
-        this.el
-          .getBoundingClientRect();
-
-
-      return {
-
-        x:
-          event.clientX
-          -
-          rect.left,
-
-        y:
-          event.clientY
-          -
-          rect.top
-
-      };
-
-    }
-
-
-
-    /* ----------------------------------
-       HOVER ENTER
-    ---------------------------------- */
-
-    onPointerEnter(event) {
-
-
-      if (
-        event.pointerType === "touch"
-      ) {
-
-        return;
-
-      }
-
-
-      const p =
-        this.localPoint(event);
-
-
-      hoverBand =
-        this;
-
-
-      createStackWave(
-
-        this,
-
-        p.x,
-
-        false
-
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       POINTER MOVE
-    ---------------------------------- */
-
-    onPointerMove(event) {
-
-
-      const p =
-        this.localPoint(event);
-
-
-      this.pointer.targetY =
-        p.y;
-
-
-
-      /* TOUCH */
-
-      if (
-        event.pointerType === "touch"
-      ) {
-
-
-        if (this.dragStart) {
-
-
-          const dx =
-            p.x
-            -
-            this.dragStart.x;
-
-
-          const dy =
-            p.y
-            -
-            this.dragStart.y;
-
-
-          this.maxDrag =
-            Math.max(
-
-              this.maxDrag,
-
-              Math.hypot(
-                dx,
-                dy
-              )
-
-            );
-
-
-          createStackWave(
-
-            this,
-
-            p.x,
-
-            true
-
-          );
-
-        }
-
-      }
-
-
-      /* MOUSE */
-
-      else {
-
-
-        hoverBand =
-          this;
-
-
-        createStackWave(
-
-          this,
-
-          p.x,
-
-          false
-
-        );
-
-      }
-
-    }
-
-
-
-    /* ----------------------------------
-       LEAVE
-    ---------------------------------- */
-
-    onPointerLeave(event) {
-
-
-      if (
-        event.pointerType === "touch"
-      ) {
-
-        return;
-
-      }
-
-
-      if (
-        hoverBand === this
-      ) {
-
-        hoverBand =
-          null;
-
-      }
-
-
-      restoreSelectedWave();
-
-    }
-
-
-
-    /* ----------------------------------
-       TOUCH START
-    ---------------------------------- */
-
-    onPointerDown(event) {
-
-
-      const p =
-        this.localPoint(event);
-
-
-      this.pointer.targetX =
-        p.x;
-
-
-      this.pointer.targetY =
-        p.y;
-
-
-      if (
-
-        event.pointerType === "touch"
-
-        ||
-
-        event.pointerType === "pen"
-
-      ) {
-
-
-        this.dragStart =
-          p;
-
-
-        this.maxDrag =
-          0;
-
-
-        createStackWave(
-
-          this,
-
-          p.x,
-
-          true
-
-        );
-
-
-        this.hit
-          .setPointerCapture?.(
-            event.pointerId
-          );
-
-      }
-
-    }
-
-
-
-    /* ----------------------------------
-       TOUCH RELEASE
-    ---------------------------------- */
-
-    onPointerUp(event) {
-
-
-      if (
-
-        event.pointerType !== "touch"
-
-        &&
-
-        event.pointerType !== "pen"
-
-      ) {
-
-        return;
-
-      }
-
-
-      const p =
-        this.localPoint(event);
-
-
-      const wasTap =
-        this.maxDrag < 12;
-
-
-
-      if (wasTap) {
-
-
-        /* SECOND TAP = OPEN */
-
-        if (
-
-          selectedBand === this
-
-          &&
-
-          this.mode === "active"
-
-          &&
-
-          this.isExposedPoint(
-            p.x,
-            p.y
-          )
-
-        ) {
-
-
-          this.navigate();
-
-          return;
-
-        }
-
-
-
-        /* FIRST TAP = SELECT */
-
-        selectedBand =
-          this;
-
-
-        this.selectedX =
-          p.x;
-
-
-        this.selectedTouch =
-          true;
-
-
-        createStackWave(
-
-          this,
-
-          p.x,
-
-          true
-
-        );
-
-      }
-
-
-      else {
-
-
-        restoreSelectedWave();
-
-      }
-
-
-      this.dragStart =
-        null;
-
-
-      this.maxDrag =
-        0;
-
-    }
-
-
-
-    /* ----------------------------------
-       DESKTOP CLICK
-    ---------------------------------- */
-
-    onClick(event) {
-
-
-      if (
-
-        event.pointerType === "touch"
-
-        ||
-
-        event.pointerType === "pen"
-
-      ) {
-
-        event.preventDefault();
-
-        return;
-
-      }
-
-
-      const p =
-        this.localPoint(event);
-
-
-
-      /* SECOND CLICK = OPEN */
-
-      if (
-
-        selectedBand === this
-
-        &&
-
-        this.mode === "active"
-
-        &&
-
-        this.isExposedPoint(
-          p.x,
-          p.y
-        )
-
-      ) {
-
-
-        this.navigate();
-
-        return;
-
-      }
-
-
-
-      /* FIRST CLICK = SELECT */
-
-      selectedBand =
-        this;
-
-
-      this.selectedX =
-        p.x;
-
-
-      this.selectedTouch =
-        false;
-
-
-      createStackWave(
-
-        this,
-
-        p.x,
-
-        false
-
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       NAVIGATION
-    ---------------------------------- */
-
-    navigate() {
-
-
-      if (
-
-        !this.href
-
-        ||
-
-        this.href === "#"
-
-      ) {
-
-        return;
-
-      }
-
-
-      window.location.href =
-        this.href;
-
-    }
-
-
-
-    /* ----------------------------------
-       WAVE SIZE
-    ---------------------------------- */
-
-    getTargetRadius(
-      touch = false
-    ) {
-
-
-      const radius =
-        Math.min(
-
-          this.w * 0.22,
-
-          210
-
-        );
-
-
-      if (touch) {
-
-
-        return Math.max(
-
-          90,
-
-          radius * 0.82
-
-        );
-
-      }
-
-
-      return Math.max(
-
-        120,
-
-        radius
-
-      );
-
-    }
-
-
-
-    getTargetLift(
-      touch = false
-    ) {
-
-
-      const amount =
-
-        touch
-
-          ?
-
-        this.h * 0.72
-
-          :
-
-        this.h * 0.75;
-
-
-      return Math.max(
-
-        42,
-
-        Math.min(
-
-          this.h * 0.82,
-
-          amount
-
-        )
-
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       CURVE
-    ---------------------------------- */
-
-    liftAtX(x) {
-
-
-      const radius =
-        Math.max(
-
-          1,
-
-          this.pointer.radius
-
-        );
-
-
-      const distance =
-        Math.abs(
-
-          x
-
-          -
-
-          this.pointer.x
-
-        );
-
-
-      if (
-        distance >= radius
-      ) {
-
-        return 0;
-
-      }
-
-
-      const t =
-        distance / radius;
-
-
-      const curve =
-
-        0.5
-
-        +
-
-        0.5
-
-        *
-
-        Math.cos(
-          Math.PI * t
-        );
-
-
-      return (
-
-        this.pointer.lift
-
-        *
-
-        Math.pow(
-
-          curve,
-
-          1.55
-
-        )
-
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       ACTIVE UNDER-LAYER
-    ---------------------------------- */
-
-    isExposedPoint(x, y) {
-
-
-      if (
-        this.mode !== "active"
-      ) {
-
-        return false;
-
-      }
-
-
-      const lift =
-        this.liftAtX(x);
-
-
-      if (
-        lift < 25
-      ) {
-
-        return false;
-
-      }
-
-
-      return (
-        y >= this.h - lift
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       LATENCY
-    ---------------------------------- */
-
-    easePointer() {
-
-
-      /*
-      This latency stays.
-
-      It affects the physical wave,
-      not the scrolling phase.
-      */
-
-      const movementLatency =
-        0.13;
-
-
-      const deformationLatency =
-        0.11;
-
-
-
-      this.pointer.x +=
-
-        (
-          this.pointer.targetX
-          -
-          this.pointer.x
-        )
-
-        *
-
-        movementLatency;
-
-
-
-      this.pointer.y +=
-
-        (
-          this.pointer.targetY
-          -
-          this.pointer.y
-        )
-
-        *
-
-        movementLatency;
-
-
-
-      this.pointer.radius +=
-
-        (
-          this.pointer.targetRadius
-          -
-          this.pointer.radius
-        )
-
-        *
-
-        deformationLatency;
-
-
-
-      this.pointer.lift +=
-
-        (
-          this.pointer.targetLift
-          -
-          this.pointer.lift
-        )
-
-        *
-
-        deformationLatency;
-
-    }
-
-
-
-    /* ----------------------------------
-       UPDATE
-    ---------------------------------- */
-
-    update(now) {
-
-
-      const deltaTime =
-        Math.min(
-
-          0.05,
-
-          (
-            now
-            -
-            this.lastTime
-          )
-
-          /
-
-          1000
-
-        );
-
-
-      this.lastTime =
-        now;
-
-
-
-      /* TEXT SCROLL */
 
       if (
         !prefersReducedMotion
@@ -1461,9 +519,10 @@
 
           *
 
-          deltaTime;
+          dt;
 
       }
+
 
 
       if (
@@ -1472,80 +531,137 @@
 
 
         this.offset %=
+
           this.repeatWidth;
 
       }
-
-
-
-      this.easePointer();
-
-
-      this.draw();
 
     }
 
 
 
     /* ----------------------------------
-       DRAW REPEATED TEXT
+       CREATE COMPLETE FLAT STRIP
 
-       Uses the SOURCE band's own
-       offset, font, direction and speed.
+       Colour and text are rendered
+       together here.
     ---------------------------------- */
 
-    drawRepeatedText(
-      ctx,
-      source,
-      y
-    ) {
+
+    renderSurface() {
 
 
-      ctx.font =
-        source.getFont();
+      const sctx =
+        this.surfaceCtx;
 
 
-      ctx.fillStyle =
-        source.textColor;
+      const surfaceHeight =
+
+        bandHeight
+        +
+        4;
 
 
-      ctx.textAlign =
+
+      /* COLOUR */
+
+
+      sctx.clearRect(
+
+        0,
+
+        0,
+
+        width,
+
+        surfaceHeight
+
+      );
+
+
+      sctx.fillStyle =
+        this.background;
+
+
+      sctx.fillRect(
+
+        0,
+
+        0,
+
+        width,
+
+        surfaceHeight
+
+      );
+
+
+
+      /* TEXT */
+
+
+      sctx.font =
+        this.getFont();
+
+
+      sctx.fillStyle =
+        this.textColor;
+
+
+      sctx.textAlign =
         "left";
 
 
-      ctx.textBaseline =
+      sctx.textBaseline =
         "middle";
+
 
 
       let start =
 
-        source.offset
+        this.offset
 
         -
 
-        source.repeatWidth * 2;
+        this.repeatWidth
+        *
+        2;
 
 
 
       while (
-        start > -source.repeatWidth
+
+        start
+
+        >
+
+        -this.repeatWidth
+
       ) {
 
 
         start -=
-          source.repeatWidth;
+          this.repeatWidth;
 
       }
 
 
 
       while (
-        start < -source.repeatWidth * 2
+
+        start
+
+        <
+
+        -this.repeatWidth
+        *
+        2
+
       ) {
 
 
         start +=
-          source.repeatWidth;
+          this.repeatWidth;
 
       }
 
@@ -1555,340 +671,31 @@
 
         let tx = start;
 
-        tx <
-        this.w
+        tx
+        <
+        width
         +
-        source.repeatWidth * 2;
+        this.repeatWidth
+        *
+        2;
 
         tx +=
-          source.repeatWidth
+          this.repeatWidth
 
       ) {
 
 
-        ctx.fillText(
+        sctx.fillText(
 
-          source.unitText,
+          this.unitText,
 
           tx,
 
-          y
+          bandHeight
+          *
+          0.5
 
         );
-
-      }
-
-    }
-
-
-
-    /* ----------------------------------
-       DRAW SOURCE BAND THROUGH GAP
-
-       IMPORTANT:
-
-       This calculates where the lower
-       band ACTUALLY is right now.
-
-       So its text and colour remain
-       physically synchronized.
-    ---------------------------------- */
-
-    drawSourceThroughGap(
-      ctx,
-      source,
-      x,
-      currentWidth
-    ) {
-
-
-      /*
-      Use the source band's own
-      current eased deformation.
-
-      Not this band's deformation.
-      */
-
-      const sourceLift =
-        source.liftAtX(
-
-          x
-          +
-          currentWidth * 0.5
-
-        );
-
-
-
-      /*
-      Imagine the source band is directly
-      below this canvas.
-
-      Its normal top edge would begin
-      at y = this.h.
-
-      When it moves upward by sourceLift:
-
-      top = this.h - sourceLift
-      */
-
-      const sourceTop =
-        this.h
-        -
-        sourceLift;
-
-
-
-      /*
-      Fill the lower band's colour from
-      its true current top edge downward.
-      */
-
-      ctx.fillStyle =
-        source.background;
-
-
-      ctx.fillRect(
-
-        x,
-
-        sourceTop - 2,
-
-        currentWidth,
-
-        source.h + 4
-
-      );
-
-
-
-      /*
-      Same physical calculation
-      for its typography.
-
-      Original centre of lower band:
-
-      this.h + source.h / 2
-
-      Then subtract its ACTUAL lift.
-      */
-
-      const sourceTextY =
-
-        this.h
-
-        +
-
-        source.h * 0.5
-
-        -
-
-        sourceLift;
-
-
-
-      this.drawRepeatedText(
-
-        ctx,
-
-        source,
-
-        sourceTextY
-
-      );
-
-    }
-
-
-
-    /* ----------------------------------
-       DRAW
-    ---------------------------------- */
-
-    draw() {
-
-
-      const ctx =
-        this.ctx;
-
-
-      const width =
-        this.w;
-
-
-      const height =
-        this.h;
-
-
-      ctx.clearRect(
-
-        0,
-
-        0,
-
-        width,
-
-        height
-
-      );
-
-
-
-      /*
-      Slight overlap between slices
-      prevents pixel seams.
-      */
-
-      const sliceWidth =
-        3;
-
-
-      const ownTextY =
-        height * 0.5;
-
-
-
-      for (
-
-        let x = 0;
-
-        x < width;
-
-        x += sliceWidth
-
-      ) {
-
-
-        const currentWidth =
-          Math.min(
-
-            sliceWidth + 2,
-
-            width - x + 1
-
-          );
-
-
-
-        const ownLift =
-          this.liftAtX(
-
-            x
-
-            +
-
-            sliceWidth * 0.5
-
-          );
-
-
-
-        const ownY =
-          -ownLift;
-
-
-
-        ctx.save();
-
-
-
-        /* slice clipping */
-
-        ctx.beginPath();
-
-
-        ctx.rect(
-
-          x,
-
-          0,
-
-          currentWidth,
-
-          height + 2
-
-        );
-
-
-        ctx.clip();
-
-
-
-        /* --------------------------------
-           PUSHED LAYER
-
-           Draw exact physical state
-           of band below.
-        -------------------------------- */
-
-        if (
-
-          this.mode === "pushed"
-
-          &&
-
-          this.pushSource
-
-        ) {
-
-
-          this.drawSourceThroughGap(
-
-            ctx,
-
-            this.pushSource,
-
-            x,
-
-            currentWidth
-
-          );
-
-        }
-
-
-
-        /* --------------------------------
-           OWN COLOURED SURFACE
-        -------------------------------- */
-
-        ctx.fillStyle =
-          this.background;
-
-
-        ctx.fillRect(
-
-          x,
-
-          ownY,
-
-          currentWidth,
-
-          height + 3
-
-        );
-
-
-
-        /* --------------------------------
-           OWN TEXT
-
-           Moves together with its
-           physical surface.
-        -------------------------------- */
-
-        this.drawRepeatedText(
-
-          ctx,
-
-          this,
-
-          ownTextY + ownY
-
-        );
-
-
-        ctx.restore();
 
       }
 
@@ -1902,68 +709,1701 @@
      CREATE BANDS
   ---------------------------------- */
 
-  const elements =
-    [
-      ...document.querySelectorAll(
-        ".band"
-      )
-    ];
 
+  const bands =
 
-  instances =
-    elements.map(
+    hitBands.map(
 
-      (element, index) =>
+      (
+        element,
+        index
+      ) =>
 
-        new MovingBand(
+        new BandSurface(
+
           element,
+
           index
+
         )
 
     );
 
 
 
-  /* ----------------------------------
-     WAIT FOR WEB FONTS
-  ---------------------------------- */
-
-  if (document.fonts) {
+  /* ==================================
+     RESIZE
+  ================================== */
 
 
-    document.fonts.ready.then(() => {
+  function resize() {
 
 
-      for (
-        const band of instances
-      ) {
+    const rect =
+      hitLayer
+        .getBoundingClientRect();
 
 
-        band.resize();
 
-      }
+    width =
+      Math.max(
 
-    });
+        1,
+
+        rect.width
+
+      );
+
+
+    height =
+      Math.max(
+
+        1,
+
+        rect.height
+
+      );
+
+
+    bandHeight =
+
+      height
+
+      /
+
+      Math.max(
+
+        1,
+
+        bands.length
+
+      );
+
+
+
+    dpr =
+      Math.min(
+
+        window.devicePixelRatio
+        ||
+        1,
+
+        2
+
+      );
+
+
+
+    canvas.width =
+      Math.ceil(
+
+        width
+        *
+        dpr
+
+      );
+
+
+    canvas.height =
+      Math.ceil(
+
+        height
+        *
+        dpr
+
+      );
+
+
+    canvas.style.width =
+      `${width}px`;
+
+
+    canvas.style.height =
+      `${height}px`;
+
+
+
+    ctx.setTransform(
+
+      dpr,
+
+      0,
+
+      0,
+
+      dpr,
+
+      0,
+
+      0
+
+    );
+
+
+
+    for (
+      const band of bands
+    ) {
+
+
+      band.resize();
+
+    }
+
+
+
+    if (
+      selectedIndex !== null
+    ) {
+
+
+      selectedX =
+        Math.min(
+
+          selectedX,
+
+          width
+
+        );
+
+    }
+
+  }
+
+
+
+  /* ==================================
+     POINTER POSITION
+  ================================== */
+
+
+  function localPoint(event) {
+
+
+    const rect =
+      hitLayer
+        .getBoundingClientRect();
+
+
+    return {
+
+
+      x:
+
+        event.clientX
+
+        -
+
+        rect.left,
+
+
+      y:
+
+        event.clientY
+
+        -
+
+        rect.top
+
+    };
+
+  }
+
+
+
+  function indexAtY(y) {
+
+
+    return Math.max(
+
+      0,
+
+      Math.min(
+
+        bands.length - 1,
+
+        Math.floor(
+
+          y
+          /
+          bandHeight
+
+        )
+
+      )
+
+    );
+
+  }
+
+
+
+  /* ==================================
+     WAVE SETTINGS
+  ================================== */
+
+
+  function targetRadius(
+    touch = false
+  ) {
+
+
+    const base =
+      Math.min(
+
+        width
+        *
+        0.22,
+
+        220
+
+      );
+
+
+    return touch
+
+      ?
+
+      Math.max(
+
+        95,
+
+        base
+        *
+        0.84
+
+      )
+
+      :
+
+      Math.max(
+
+        125,
+
+        base
+
+      );
+
+  }
+
+
+
+  function targetLift(
+    touch = false
+  ) {
+
+
+    const amount =
+
+      touch
+
+        ?
+
+      bandHeight
+      *
+      0.72
+
+        :
+
+      bandHeight
+      *
+      0.76;
+
+
+    return Math.max(
+
+      42,
+
+      Math.min(
+
+        bandHeight
+        *
+        0.84,
+
+        amount
+
+      )
+
+    );
 
   }
 
 
 
   /* ----------------------------------
-     ANIMATION
+     ACTIVATE WAVE
   ---------------------------------- */
+
+
+  function setWave(
+    index,
+    x,
+    touch = false
+  ) {
+
+
+    wave.targetIndex =
+      index;
+
+
+    wave.index =
+      index;
+
+
+    wave.targetX =
+      x;
+
+
+    wave.targetRadius =
+      targetRadius(
+        touch
+      );
+
+
+    wave.targetLift =
+      targetLift(
+        touch
+      );
+
+  }
+
+
+
+  /* ----------------------------------
+     REMOVE WAVE
+  ---------------------------------- */
+
+
+  function flattenWave() {
+
+
+    wave.targetIndex =
+      null;
+
+
+    wave.targetRadius =
+      0;
+
+
+    wave.targetLift =
+      0;
+
+  }
+
+
+
+  /* ----------------------------------
+     RETURN TO SELECTED BAND
+  ---------------------------------- */
+
+
+  function restoreSelectedWave() {
+
+
+    if (
+      selectedIndex === null
+    ) {
+
+
+      flattenWave();
+
+      return;
+
+    }
+
+
+    setWave(
+
+      selectedIndex,
+
+      selectedX,
+
+      selectedTouch
+
+    );
+
+  }
+
+
+
+  /* ==================================
+     WAVE SHAPE
+  ================================== */
+
+
+  function waveProfileAtX(x) {
+
+
+    if (
+
+      wave.index === null
+
+      ||
+
+      wave.radius <= 0.5
+
+      ||
+
+      wave.lift <= 0.5
+
+    ) {
+
+
+      return 0;
+
+    }
+
+
+
+    const distance =
+      Math.abs(
+
+        x
+
+        -
+
+        wave.x
+
+      );
+
+
+
+    if (
+      distance >= wave.radius
+    ) {
+
+
+      return 0;
+
+    }
+
+
+
+    const t =
+
+      distance
+
+      /
+
+      wave.radius;
+
+
+
+    const curve =
+
+      0.5
+
+      +
+
+      0.5
+
+      *
+
+      Math.cos(
+
+        Math.PI
+        *
+        t
+
+      );
+
+
+
+    return (
+
+      wave.lift
+
+      *
+
+      Math.pow(
+
+        curve,
+
+        1.55
+
+      )
+
+    );
+
+  }
+
+
+
+  /* ----------------------------------
+     HOW FAR DOES EACH BAND MOVE?
+  ---------------------------------- */
+
+
+  function translationForBand(
+    index,
+    x
+  ) {
+
+
+    /*
+    Bands below the active band
+    don't move.
+    */
+
+
+    if (
+
+      wave.index === null
+
+      ||
+
+      index > wave.index
+
+    ) {
+
+
+      return 0;
+
+    }
+
+
+
+    const distanceUp =
+
+      wave.index
+
+      -
+
+      index;
+
+
+
+    /*
+
+    Active band = full force.
+
+    Every band above receives
+    slightly less force.
+
+    */
+
+
+    return (
+
+      waveProfileAtX(x)
+
+      *
+
+      Math.pow(
+
+        LIFT_DECAY,
+
+        distanceUp
+
+      )
+
+    );
+
+  }
+
+
+
+  /* ==================================
+     CHECK WHITE REVEALED AREA
+  ================================== */
+
+
+  function isExposedPoint(
+    index,
+    x,
+    y
+  ) {
+
+
+    if (
+
+      selectedIndex !== index
+
+      ||
+
+      wave.index !== index
+
+    ) {
+
+
+      return false;
+
+    }
+
+
+
+    const lift =
+      translationForBand(
+
+        index,
+
+        x
+
+      );
+
+
+
+    if (
+      lift < 22
+    ) {
+
+
+      return false;
+
+    }
+
+
+
+    const baseBottom =
+
+      (
+        index + 1
+      )
+
+      *
+
+      bandHeight;
+
+
+
+    const liftedBottom =
+
+      baseBottom
+
+      -
+
+      lift;
+
+
+
+    return (
+
+      y >= liftedBottom
+
+      &&
+
+      y <= baseBottom
+
+    );
+
+  }
+
+
+
+  /* ==================================
+     NAVIGATION
+  ================================== */
+
+
+  function navigate(index) {
+
+
+    const href =
+      bands[index]
+        ?.href;
+
+
+    if (
+
+      !href
+
+      ||
+
+      href === "#"
+
+    ) {
+
+
+      return;
+
+    }
+
+
+    window.location.href =
+      href;
+
+  }
+
+
+
+  /* ==================================
+     LATENCY
+  ================================== */
+
+
+  function easeWave() {
+
+
+    /*
+    Keep the latency.
+
+    Only the PHYSICAL WAVE
+    is delayed.
+
+    The actual strips and text
+    remain one synchronized image.
+    */
+
+
+    const movementLatency =
+      0.13;
+
+
+    const shapeLatency =
+      0.11;
+
+
+
+    wave.x +=
+
+      (
+        wave.targetX
+
+        -
+
+        wave.x
+      )
+
+      *
+
+      movementLatency;
+
+
+
+    wave.radius +=
+
+      (
+        wave.targetRadius
+
+        -
+
+        wave.radius
+      )
+
+      *
+
+      shapeLatency;
+
+
+
+    wave.lift +=
+
+      (
+        wave.targetLift
+
+        -
+
+        wave.lift
+      )
+
+      *
+
+      shapeLatency;
+
+
+
+    if (
+
+      wave.targetIndex === null
+
+      &&
+
+      wave.lift < 0.2
+
+      &&
+
+      wave.radius < 0.2
+
+    ) {
+
+
+      wave.index =
+        null;
+
+
+      wave.lift =
+        0;
+
+
+      wave.radius =
+        0;
+
+    }
+
+  }
+
+
+
+  /* ==================================
+     DRAW ONE BAND
+  ================================== */
+
+
+  function drawBand(band) {
+
+
+    const baseTop =
+
+      band.index
+
+      *
+
+      bandHeight;
+
+
+
+    /*
+
+    Take the complete strip image
+    and slice it vertically.
+
+    Each slice moves upward
+    according to the global wave.
+
+    Colour + typography therefore
+    ALWAYS remain together.
+
+    */
+
+
+    for (
+
+      let x = 0;
+
+      x < width;
+
+      x += SLICE_WIDTH
+
+    ) {
+
+
+      const sw =
+        Math.min(
+
+          SLICE_WIDTH,
+
+          width - x
+
+        );
+
+
+
+      const sampleX =
+
+        x
+
+        +
+
+        sw * 0.5;
+
+
+
+      const lift =
+        translationForBand(
+
+          band.index,
+
+          sampleX
+
+        );
+
+
+
+      const top =
+
+        baseTop
+
+        -
+
+        lift;
+
+
+
+      /* SOURCE COORDINATES */
+
+
+      const sourceX =
+        Math.floor(
+
+          x
+          *
+          dpr
+
+        );
+
+
+      const sourceW =
+        Math.max(
+
+          1,
+
+          Math.ceil(
+
+            sw
+            *
+            dpr
+
+          )
+
+        );
+
+
+      const sourceH =
+        band.surface.height;
+
+
+
+      /*
+
+      Small overlap horizontally
+      and vertically removes
+      pixel seams.
+
+      */
+
+
+      ctx.drawImage(
+
+        band.surface,
+
+
+        sourceX,
+
+        0,
+
+        sourceW,
+
+        sourceH,
+
+
+        x,
+
+        top - 1,
+
+        sw + 1.25,
+
+        bandHeight + 3
+
+      );
+
+    }
+
+  }
+
+
+
+  /* ==================================
+     DRAW WHOLE INTERFACE
+  ================================== */
+
+
+  function draw() {
+
+
+    /*
+    Transparent first.
+
+    The white HTML information
+    underneath can therefore appear
+    inside the opening.
+    */
+
+
+    ctx.clearRect(
+
+      0,
+
+      0,
+
+      width,
+
+      height
+
+    );
+
+
+
+    /*
+    First create all six complete
+    flat colour/text strips.
+    */
+
+
+    for (
+      const band of bands
+    ) {
+
+
+      band.renderSurface();
+
+    }
+
+
+
+    /*
+    IMPORTANT:
+
+    Draw top → bottom.
+
+    A lower strip therefore covers
+    the overlap with the strip above.
+
+    This produces the physical
+    pushing effect without gaps.
+    */
+
+
+    for (
+      const band of bands
+    ) {
+
+
+      drawBand(
+        band
+      );
+
+    }
+
+  }
+
+
+
+  /* ==================================
+     POINTER MOVE
+  ================================== */
+
+
+  hitLayer.addEventListener(
+
+    "pointermove",
+
+    (event) => {
+
+
+      const p =
+        localPoint(event);
+
+
+      const index =
+        indexAtY(
+          p.y
+        );
+
+
+
+      /* TOUCH DRAG */
+
+
+      if (
+
+        event.pointerType === "touch"
+
+        ||
+
+        event.pointerType === "pen"
+
+      ) {
+
+
+        if (
+          !dragStart
+        ) {
+
+
+          return;
+
+        }
+
+
+
+        const dx =
+
+          p.x
+
+          -
+
+          dragStart.x;
+
+
+
+        const dy =
+
+          p.y
+
+          -
+
+          dragStart.y;
+
+
+
+        maxDrag =
+          Math.max(
+
+            maxDrag,
+
+            Math.hypot(
+
+              dx,
+
+              dy
+
+            )
+
+          );
+
+
+
+        setWave(
+
+          index,
+
+          p.x,
+
+          true
+
+        );
+
+
+        return;
+
+      }
+
+
+
+      /* MOUSE */
+
+
+      setWave(
+
+        index,
+
+        p.x,
+
+        false
+
+      );
+
+    }
+
+  );
+
+
+
+  /* ==================================
+     POINTER LEAVES SCREEN
+  ================================== */
+
+
+  hitLayer.addEventListener(
+
+    "pointerleave",
+
+    (event) => {
+
+
+      if (
+
+        event.pointerType === "touch"
+
+        ||
+
+        event.pointerType === "pen"
+
+      ) {
+
+
+        return;
+
+      }
+
+
+
+      restoreSelectedWave();
+
+    }
+
+  );
+
+
+
+  /* ==================================
+     POINTER DOWN
+  ================================== */
+
+
+  hitLayer.addEventListener(
+
+    "pointerdown",
+
+    (event) => {
+
+
+      const p =
+        localPoint(event);
+
+
+      const index =
+        indexAtY(
+          p.y
+        );
+
+
+
+      dragStart = {
+
+
+        x:
+          p.x,
+
+
+        y:
+          p.y,
+
+
+        index:
+          index,
+
+
+        pointerType:
+
+          event.pointerType
+
+          ||
+
+          "mouse"
+
+      };
+
+
+      maxDrag =
+        0;
+
+
+
+      if (
+
+        event.pointerType === "touch"
+
+        ||
+
+        event.pointerType === "pen"
+
+      ) {
+
+
+        hitLayer
+          .setPointerCapture?.(
+            event.pointerId
+          );
+
+
+        setWave(
+
+          index,
+
+          p.x,
+
+          true
+
+        );
+
+      }
+
+    }
+
+  );
+
+
+
+  /* ==================================
+     POINTER UP
+  ================================== */
+
+
+  hitLayer.addEventListener(
+
+    "pointerup",
+
+    (event) => {
+
+
+      if (
+        !dragStart
+      ) {
+
+
+        return;
+
+      }
+
+
+
+      const p =
+        localPoint(event);
+
+
+      const index =
+        indexAtY(
+          p.y
+        );
+
+
+      const wasTap =
+        maxDrag < 12;
+
+
+      const isTouch =
+
+        event.pointerType === "touch"
+
+        ||
+
+        event.pointerType === "pen";
+
+
+
+      if (wasTap) {
+
+
+        /* --------------------------------
+           SECOND CLICK / TAP
+
+           If the band is already selected
+           and user clicks in white opening:
+           ENTER PAGE
+        -------------------------------- */
+
+
+        if (
+
+          isExposedPoint(
+
+            index,
+
+            p.x,
+
+            p.y
+
+          )
+
+        ) {
+
+
+          navigate(
+            index
+          );
+
+        }
+
+
+
+        /* --------------------------------
+           FIRST CLICK / TAP
+
+           Select the band.
+        -------------------------------- */
+
+
+        else {
+
+
+          selectedIndex =
+            index;
+
+
+          selectedX =
+            p.x;
+
+
+          selectedTouch =
+            isTouch;
+
+
+          setWave(
+
+            index,
+
+            p.x,
+
+            isTouch
+
+          );
+
+        }
+
+      }
+
+
+
+      /* DRAG */
+
+
+      else {
+
+
+        restoreSelectedWave();
+
+      }
+
+
+
+      dragStart =
+        null;
+
+
+      maxDrag =
+        0;
+
+    }
+
+  );
+
+
+
+  /* ==================================
+     CANCEL
+  ================================== */
+
+
+  hitLayer.addEventListener(
+
+    "pointercancel",
+
+    () => {
+
+
+      dragStart =
+        null;
+
+
+      maxDrag =
+        0;
+
+
+      restoreSelectedWave();
+
+    }
+
+  );
+
+
+
+  /* ==================================
+     KEYBOARD
+  ================================== */
+
+
+  hitLayer.addEventListener(
+
+    "keydown",
+
+    (event) => {
+
+
+      const hit =
+        event.target.closest(
+          ".band-hit"
+        );
+
+
+      if (
+        !hit
+      ) {
+
+
+        return;
+
+      }
+
+
+
+      const index =
+        hitBands.indexOf(
+          hit
+        );
+
+
+      if (
+        index < 0
+      ) {
+
+
+        return;
+
+      }
+
+
+
+      if (
+
+        event.key === "Enter"
+
+        ||
+
+        event.key === " "
+
+      ) {
+
+
+        event.preventDefault();
+
+
+
+        if (
+          selectedIndex === index
+        ) {
+
+
+          navigate(
+            index
+          );
+
+        }
+
+
+        else {
+
+
+          selectedIndex =
+            index;
+
+
+          selectedX =
+            width * 0.5;
+
+
+          selectedTouch =
+            false;
+
+
+          setWave(
+
+            index,
+
+            selectedX,
+
+            false
+
+          );
+
+        }
+
+      }
+
+    }
+
+  );
+
+
+
+  /* ==================================
+     RESIZE
+  ================================== */
+
+
+  window.addEventListener(
+
+    "resize",
+
+    resize,
+
+    {
+      passive: true
+    }
+
+  );
+
+
+
+  /* ----------------------------------
+     WAIT UNTIL FONTS EXIST
+  ---------------------------------- */
+
+
+  if (
+    document.fonts
+  ) {
+
+
+    document.fonts
+      .ready
+      .then(
+        resize
+      );
+
+  }
+
+
+
+  resize();
+
+
+
+  /* ==================================
+     ANIMATION LOOP
+  ================================== */
+
 
   function animate(now) {
 
 
+    const dt =
+      Math.min(
+
+        0.05,
+
+        Math.max(
+
+          0,
+
+          (
+            now
+            -
+            lastTime
+          )
+
+          /
+
+          1000
+
+        )
+
+      );
+
+
+    lastTime =
+      now;
+
+
+
+    /* MOVE TEXT */
+
+
     for (
-      const band of instances
+      const band of bands
     ) {
 
 
-      band.update(now);
+      band.update(
+        dt
+      );
 
     }
+
+
+
+    /* MOVE WAVE WITH LATENCY */
+
+
+    easeWave();
+
+
+
+    /* DRAW EVERYTHING */
+
+
+    draw();
+
 
 
     requestAnimationFrame(
@@ -1971,6 +2411,7 @@
     );
 
   }
+
 
 
   requestAnimationFrame(
