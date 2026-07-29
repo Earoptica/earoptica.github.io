@@ -43,7 +43,7 @@
 
 
   /* ----------------------------------
-     RESET ALL WAVES
+     FLATTEN EVERYTHING
   ---------------------------------- */
 
   function flattenAll() {
@@ -52,13 +52,13 @@
 
       band.mode = "flat";
 
-      band.pushColor = null;
+      band.pushSource = null;
+
+      band.pointer.active = false;
 
       band.pointer.targetRadius = 0;
 
       band.pointer.targetLift = 0;
-
-      band.pointer.active = false;
 
     }
 
@@ -67,16 +67,7 @@
 
 
   /* ----------------------------------
-     CREATE STACKED WAVE
-
-     active band:
-     reveals white info underneath
-
-     bands above:
-     are physically pushed upwards
-
-     bands below:
-     remain flat
+     STACKED WAVE
   ---------------------------------- */
 
   function createStackWave(
@@ -92,13 +83,13 @@
     for (const band of instances) {
 
 
-      /* BELOW ACTIVE BAND */
+      /* BANDS BELOW ACTIVE BAND */
 
       if (band.index > activeIndex) {
 
         band.mode = "flat";
 
-        band.pushColor = null;
+        band.pushSource = null;
 
         band.pointer.active = false;
 
@@ -109,7 +100,6 @@
         continue;
 
       }
-
 
 
       const distance =
@@ -123,7 +113,7 @@
 
         band.mode = "active";
 
-        band.pushColor = null;
+        band.pushSource = null;
 
         band.pointer.active = true;
 
@@ -151,21 +141,18 @@
 
 
 
-      /*
-      Wave gradually weakens
-      as it travels upward.
-      */
+      /* pressure weakens upward */
 
       const liftDecay =
         Math.pow(
-          0.72,
+          0.76,
           distance
         );
 
 
       const radiusDecay =
         Math.pow(
-          0.95,
+          0.97,
           distance
         );
 
@@ -184,26 +171,19 @@
 
 
       /*
-      The colour underneath this band
-      pushes into it.
+      This is the band directly
+      underneath.
 
-      Example:
-
-      RESEARCH pushes LOCATIONS,
-      LOCATIONS pushes ARTISTS,
-      ARTISTS pushes PROGRAMME.
+      Its colour AND typography
+      become visible inside the push.
       */
 
-      const bandBelow =
+      band.pushSource =
         instances[
           band.index + 1
-        ];
-
-
-      band.pushColor =
-        bandBelow
-          ? bandBelow.background
-          : activeBand.background;
+        ]
+        ||
+        null;
 
     }
 
@@ -212,7 +192,7 @@
 
 
   /* ----------------------------------
-     RESTORE SELECTED BAND
+     RETURN TO SELECTED STATE
   ---------------------------------- */
 
   function restoreSelectedWave() {
@@ -241,7 +221,7 @@
 
 
   /* ==================================
-     BAND CLASS
+     BAND
   ================================== */
 
   class MovingBand {
@@ -335,7 +315,7 @@
         "flat";
 
 
-      this.pushColor =
+      this.pushSource =
         null;
 
 
@@ -378,7 +358,7 @@
 
 
 
-      /* INVISIBLE PRESSURE POINT */
+      /* PRESSURE */
 
       this.pointer = {
 
@@ -401,7 +381,6 @@
         active: false
 
       };
-
 
 
       this.dragStart =
@@ -475,65 +454,44 @@
 
 
       this.hit.addEventListener(
-
         "pointerenter",
-
         this.onPointerEnter
-
       );
 
 
       this.hit.addEventListener(
-
         "pointermove",
-
         this.onPointerMove
-
       );
 
 
       this.hit.addEventListener(
-
         "pointerleave",
-
         this.onPointerLeave
-
       );
 
 
       this.hit.addEventListener(
-
         "pointerdown",
-
         this.onPointerDown
-
       );
 
 
       this.hit.addEventListener(
-
         "pointerup",
-
         this.onPointerUp
-
       );
 
 
       this.hit.addEventListener(
-
         "pointercancel",
-
         this.onPointerUp
-
       );
 
 
       this.hit.addEventListener(
-
         "click",
-
         this.onClick
-
       );
 
     }
@@ -565,7 +523,7 @@
 
           1,
 
-          Math.floor(
+          Math.ceil(
             rect.width
           )
 
@@ -577,7 +535,7 @@
 
           1,
 
-          Math.floor(
+          Math.ceil(
             rect.height
           )
 
@@ -595,13 +553,13 @@
 
 
       this.canvas.width =
-        Math.floor(
+        Math.ceil(
           this.w * this.dpr
         );
 
 
       this.canvas.height =
-        Math.floor(
+        Math.ceil(
           this.h * this.dpr
         );
 
@@ -705,7 +663,7 @@
 
 
     /* ----------------------------------
-       LOCAL POINTER POSITION
+       POINTER
     ---------------------------------- */
 
     localPoint(event) {
@@ -734,17 +692,11 @@
 
 
 
-    /* ----------------------------------
-       HOVER ENTER
-    ---------------------------------- */
-
     onPointerEnter(event) {
 
 
       if (
-        event.pointerType
-        ===
-        "touch"
+        event.pointerType === "touch"
       ) {
 
         return;
@@ -774,10 +726,6 @@
 
 
 
-    /* ----------------------------------
-       MOVE
-    ---------------------------------- */
-
     onPointerMove(event) {
 
 
@@ -789,8 +737,6 @@
         p.y;
 
 
-
-      /* TOUCH */
 
       if (
         event.pointerType === "touch"
@@ -824,10 +770,6 @@
 
             );
 
-        }
-
-
-        if (this.dragStart) {
 
           createStackWave(
 
@@ -843,8 +785,6 @@
 
       }
 
-
-      /* DESKTOP */
 
       else {
 
@@ -869,17 +809,11 @@
 
 
 
-    /* ----------------------------------
-       LEAVE
-    ---------------------------------- */
-
     onPointerLeave(event) {
 
 
       if (
-        event.pointerType
-        ===
-        "touch"
+        event.pointerType === "touch"
       ) {
 
         return;
@@ -902,10 +836,6 @@
     }
 
 
-
-    /* ----------------------------------
-       TOUCH START
-    ---------------------------------- */
 
     onPointerDown(event) {
 
@@ -963,10 +893,6 @@
 
 
 
-    /* ----------------------------------
-       TOUCH RELEASE
-    ---------------------------------- */
-
     onPointerUp(event) {
 
 
@@ -997,13 +923,6 @@
       if (wasTap) {
 
 
-        /*
-        SECOND TAP
-        on selected active band
-        and inside revealed area:
-        OPEN PAGE
-        */
-
         if (
 
           selectedBand === this
@@ -1028,12 +947,6 @@
 
         }
 
-
-
-        /*
-        FIRST TAP:
-        select this band
-        */
 
         selectedBand =
           this;
@@ -1063,14 +976,6 @@
       else {
 
 
-        /*
-        Drag only creates temporary
-        wave.
-
-        After release, return to
-        selected state.
-        */
-
         restoreSelectedWave();
 
       }
@@ -1086,10 +991,6 @@
     }
 
 
-
-    /* ----------------------------------
-       DESKTOP CLICK
-    ---------------------------------- */
 
     onClick(event) {
 
@@ -1116,11 +1017,6 @@
 
 
 
-      /*
-      SECOND CLICK
-      in exposed active band
-      */
-
       if (
 
         selectedBand === this
@@ -1145,12 +1041,6 @@
 
       }
 
-
-
-      /*
-      FIRST CLICK:
-      select band
-      */
 
       selectedBand =
         this;
@@ -1208,7 +1098,7 @@
 
 
     /* ----------------------------------
-       RADIUS
+       WAVE
     ---------------------------------- */
 
     getTargetRadius(
@@ -1252,10 +1142,6 @@
 
 
 
-    /* ----------------------------------
-       LIFT
-    ---------------------------------- */
-
     getTargetLift(
       touch = false
     ) {
@@ -1291,10 +1177,6 @@
     }
 
 
-
-    /* ----------------------------------
-       WAVE CURVE
-    ---------------------------------- */
 
     liftAtX(x) {
 
@@ -1369,10 +1251,6 @@
 
 
 
-    /* ----------------------------------
-       EXPOSED AREA
-    ---------------------------------- */
-
     isExposedPoint(x, y) {
 
 
@@ -1398,12 +1276,8 @@
       }
 
 
-      const exposedTop =
-        this.h - lift;
-
-
       return (
-        y >= exposedTop
+        y >= this.h - lift
       );
 
     }
@@ -1509,7 +1383,6 @@
         now;
 
 
-
       if (
         !prefersReducedMotion
       ) {
@@ -1551,6 +1424,95 @@
 
 
     /* ----------------------------------
+       REPEATED TEXT
+    ---------------------------------- */
+
+    drawRepeatedText(
+      ctx,
+      source,
+      y
+    ) {
+
+
+      ctx.font =
+        source.getFont();
+
+
+      ctx.fillStyle =
+        source.textColor;
+
+
+      ctx.textAlign =
+        "left";
+
+
+      ctx.textBaseline =
+        "middle";
+
+
+      let start =
+
+        source.offset
+
+        -
+
+        source.repeatWidth * 2;
+
+
+      while (
+        start > -source.repeatWidth
+      ) {
+
+
+        start -=
+          source.repeatWidth;
+
+      }
+
+
+      while (
+        start < -source.repeatWidth * 2
+      ) {
+
+
+        start +=
+          source.repeatWidth;
+
+      }
+
+
+      for (
+
+        let tx = start;
+
+        tx <
+        this.w
+        +
+        source.repeatWidth * 2;
+
+        tx +=
+          source.repeatWidth
+
+      ) {
+
+
+        ctx.fillText(
+
+          source.unitText,
+
+          tx,
+
+          y
+
+        );
+
+      }
+
+    }
+
+
+
+    /* ----------------------------------
        DRAW
     ---------------------------------- */
 
@@ -1582,24 +1544,19 @@
       );
 
 
+      /*
+      Smaller slices = smoother wave.
+
+      Slight overlap prevents
+      one-pixel seams.
+      */
+
       const sliceWidth =
-        4;
+        3;
 
 
-      const textY =
+      const ownTextY =
         height * 0.5;
-
-
-      ctx.textAlign =
-        "left";
-
-
-      ctx.textBaseline =
-        "middle";
-
-
-      ctx.font =
-        this.getFont();
 
 
 
@@ -1617,9 +1574,9 @@
         const currentWidth =
           Math.min(
 
-            sliceWidth + 1,
+            sliceWidth + 2,
 
-            width - x
+            width - x + 1
 
           );
 
@@ -1631,7 +1588,7 @@
 
             +
 
-            currentWidth * 0.5
+            sliceWidth * 0.5
 
           );
 
@@ -1654,7 +1611,7 @@
 
           currentWidth,
 
-          height
+          height + 1
 
         );
 
@@ -1664,24 +1621,29 @@
 
 
         /* --------------------------------
-           PUSHED BANDS
+           PUSHED BAND:
 
-           Fill background first with
-           colour of band underneath.
-
-           Therefore NO white info appears.
+           draw the band underneath
+           inside the revealed wave.
         -------------------------------- */
 
-
         if (
+
           this.mode === "pushed"
+
+          &&
+
+          this.pushSource
+
         ) {
 
 
+          const source =
+            this.pushSource;
+
+
           ctx.fillStyle =
-            this.pushColor
-            ||
-            this.background;
+            source.background;
 
 
           ctx.fillRect(
@@ -1692,7 +1654,37 @@
 
             currentWidth,
 
-            height + 1
+            height + 2
+
+          );
+
+
+
+          /*
+          Centre the lower band's
+          typography inside the exposed
+          section.
+
+          Because this happens per slice,
+          the text follows the curve too.
+          */
+
+          const exposedTextY =
+
+            height
+
+            -
+
+            lift * 0.5;
+
+
+          this.drawRepeatedText(
+
+            ctx,
+
+            source,
+
+            exposedTextY
 
           );
 
@@ -1701,9 +1693,8 @@
 
 
         /* --------------------------------
-           BAND SURFACE
+           OWN BAND SURFACE
         -------------------------------- */
-
 
         ctx.fillStyle =
           this.background;
@@ -1723,87 +1714,17 @@
 
 
 
-        /* --------------------------------
-           MOVING TEXT
-        -------------------------------- */
+        /* OWN TEXT MOVES WITH SURFACE */
 
+        this.drawRepeatedText(
 
-        ctx.fillStyle =
-          this.textColor;
+          ctx,
 
+          this,
 
-        let start =
+          ownTextY + y
 
-          this.offset
-
-          -
-
-          this.repeatWidth * 2;
-
-
-        while (
-
-          start
-
-          >
-
-          -this.repeatWidth
-
-        ) {
-
-
-          start -=
-            this.repeatWidth;
-
-        }
-
-
-        while (
-
-          start
-
-          <
-
-          -this.repeatWidth * 2
-
-        ) {
-
-
-          start +=
-            this.repeatWidth;
-
-        }
-
-
-        for (
-
-          let tx = start;
-
-          tx <
-
-          width
-
-          +
-
-          this.repeatWidth * 2;
-
-          tx +=
-            this.repeatWidth
-
-        ) {
-
-
-          ctx.fillText(
-
-            this.unitText,
-
-            tx,
-
-            textY + y
-
-          );
-
-        }
+        );
 
 
         ctx.restore();
@@ -1842,9 +1763,7 @@
 
 
 
-  /* ----------------------------------
-     WAIT FOR WEB FONTS
-  ---------------------------------- */
+  /* WEB FONTS */
 
   if (document.fonts) {
 
@@ -1868,7 +1787,7 @@
 
 
   /* ----------------------------------
-     ANIMATION LOOP
+     ANIMATION
   ---------------------------------- */
 
   function animate(now) {
