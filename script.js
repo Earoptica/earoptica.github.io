@@ -45,7 +45,7 @@
 
 
   /* ----------------------------------
-     CLOSE OTHER TOUCH BANDS
+     CLOSE OTHER SELECTED BANDS
   ---------------------------------- */
 
 
@@ -155,11 +155,8 @@
 
       this.dpr =
         Math.min(
-
           window.devicePixelRatio || 1,
-
           2
-
         );
 
 
@@ -370,49 +367,36 @@
 
       this.w =
         Math.max(
-
           1,
-
           Math.floor(rect.width)
-
         );
 
 
       this.h =
         Math.max(
-
           1,
-
           Math.floor(rect.height)
-
         );
 
 
 
       this.dpr =
         Math.min(
-
           window.devicePixelRatio || 1,
-
           2
-
         );
 
 
 
       this.canvas.width =
         Math.floor(
-
           this.w * this.dpr
-
         );
 
 
       this.canvas.height =
         Math.floor(
-
           this.h * this.dpr
-
         );
 
 
@@ -442,9 +426,6 @@
 
       );
 
-
-
-      /* TEXT SIZE */
 
 
       this.fontSize =
@@ -505,13 +486,11 @@
 
 
       const separator =
-
         "     ·     ";
 
 
 
       this.unitText =
-
         `${this.label}${separator}`;
 
 
@@ -617,7 +596,7 @@
 
 
     /* --------------------------------
-       MOVEMENT
+       POINTER MOVEMENT
     -------------------------------- */
 
 
@@ -773,7 +752,7 @@
 
 
     /* --------------------------------
-       TOUCH START
+       POINTER DOWN
     -------------------------------- */
 
 
@@ -873,15 +852,8 @@
       if (wasTap) {
 
 
-        /*
-
-        If the band is already open
-        and the user taps inside the
-        revealed area:
-
-        ENTER THE SEGMENT.
-
-        */
+        /* SECOND TAP:
+           enter selected segment */
 
 
         if (
@@ -906,13 +878,8 @@
 
 
 
-        /*
-
-        FIRST TAP:
-
-        reveal information.
-
-        */
+        /* FIRST TAP:
+           select band */
 
 
         closeOtherBands(this);
@@ -944,14 +911,8 @@
       }
 
 
-      /*
-
-      DRAGGING:
-
-      deformation follows finger,
-      then closes.
-
-      */
+      /* DRAG:
+         follow finger, then close */
 
 
       else {
@@ -1005,6 +966,7 @@
 
       ) {
 
+
         event.preventDefault();
 
         return;
@@ -1018,19 +980,72 @@
 
 
 
+      /* --------------------------------
+         BAND ALREADY SELECTED
+
+         Second click inside exposed
+         section opens the page.
+      -------------------------------- */
+
+
       if (
-
-        this.isExposedPoint(
-          p.x,
-          p.y
-        )
-
+        this.pointer.pinned
       ) {
 
 
-        this.navigate();
+        if (
+
+          this.isExposedPoint(
+            p.x,
+            p.y
+          )
+
+        ) {
+
+
+          this.navigate();
+
+          return;
+
+        }
 
       }
+
+
+
+      /* --------------------------------
+         FIRST CLICK
+
+         Select this band and keep
+         deformation open.
+      -------------------------------- */
+
+
+      closeOtherBands(this);
+
+
+      this.pointer.pinned =
+        true;
+
+
+      this.pointer.active =
+        true;
+
+
+      this.pointer.targetX =
+        p.x;
+
+
+      this.pointer.targetY =
+        p.y;
+
+
+      this.pointer.targetRadius =
+        this.getTargetRadius();
+
+
+      this.pointer.targetLift =
+        this.getTargetLift();
 
     }
 
@@ -1116,7 +1131,7 @@
 
 
     /* --------------------------------
-       HOW HIGH THE BAND MOVES
+       HOW HIGH BAND MOVES
     -------------------------------- */
 
 
@@ -1158,7 +1173,7 @@
 
 
     /* --------------------------------
-       THE CURVE
+       CURVE
     -------------------------------- */
 
 
@@ -1210,9 +1225,6 @@
 
 
 
-      /* smooth half-circle-like curve */
-
-
       const curve =
 
         0.5
@@ -1252,7 +1264,7 @@
 
 
     /* --------------------------------
-       IS INFORMATION EXPOSED HERE?
+       CHECK EXPOSED AREA
     -------------------------------- */
 
 
@@ -1286,9 +1298,7 @@
 
 
       return (
-
         y >= exposedTop
-
       );
 
     }
@@ -1489,9 +1499,6 @@
 
 
 
-      /* Remove previous frame */
-
-
       ctx.clearRect(
 
         0,
@@ -1504,19 +1511,6 @@
 
       );
 
-
-
-      /*
-
-      Band is divided into tiny
-      vertical strips.
-
-      Each strip moves up by a
-      slightly different amount.
-
-      This produces the curve.
-
-      */
 
 
       const sliceWidth =
@@ -1586,13 +1580,6 @@
 
 
 
-        /*
-
-        Clip to one vertical strip.
-
-        */
-
-
         ctx.beginPath();
 
 
@@ -1613,9 +1600,7 @@
 
 
 
-        /* ----------------------------
-           COLOURED SURFACE
-        ---------------------------- */
+        /* BAND COLOR */
 
 
         ctx.fillStyle =
@@ -1636,9 +1621,7 @@
 
 
 
-        /* ----------------------------
-           MOVING TYPE
-        ---------------------------- */
+        /* TEXT */
 
 
         ctx.fillStyle =
@@ -1759,15 +1742,9 @@
 
 
 
-  /*
-
-  Web fonts load slightly after
-  JavaScript starts.
-
-  Once loaded, calculate their
-  exact width again.
-
-  */
+  /* ----------------------------------
+     WAIT FOR WEB FONTS
+  ---------------------------------- */
 
 
   if (document.fonts) {
