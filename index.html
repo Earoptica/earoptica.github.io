@@ -1,472 +1,387 @@
 <!doctype html>
+
 <html lang="en">
+
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#ffffff" />
+
+  <meta charset="utf-8">
+
   <meta
-    name="description"
-    content="Earoptica ’27 — City-Wide Festival for Media Arts, Ghent, March–June 2027."
-  />
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  >
+
+  <meta
+    name="theme-color"
+    content="#ffffff"
+  >
 
   <title>Earoptica ’27</title>
 
-  <link rel="stylesheet" href="style.css" />
-  <script src="script.js" defer></script>
+
+  <!-- MODERN TYPEFACES -->
+
+  <link
+    rel="preconnect"
+    href="https://fonts.googleapis.com"
+  >
+
+  <link
+    rel="preconnect"
+    href="https://fonts.gstatic.com"
+    crossorigin
+  >
+
+  <link
+    href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Barlow+Condensed:wght@500;700;900&family=IBM+Plex+Mono:wght@500;700&family=Inter:wght@400;600;800&family=Space+Grotesk:wght@400;600;700&display=swap"
+    rel="stylesheet"
+  >
+
+
+  <link
+    rel="stylesheet"
+    href="style.css"
+  >
+
+
+  <script
+    src="script.js"
+    defer
+  ></script>
+
 </head>
+
 
 <body>
 
-  <header class="site-header" id="top">
 
-    <div class="site-title">
-      EAROPTICA ’27
-    </div>
-
-    <div class="site-meta">
-      <span>CITY-WIDE FESTIVAL FOR MEDIA ARTS</span>
-      <span>GHENT — MARCH / JUNE 2027</span>
-    </div>
-
-  </header>
+  <main class="bands">
 
 
-  <main>
+    <!-- PROGRAMME -->
 
-    <section class="intro">
 
-      <h1>
-        Art as a civic organism.
-      </h1>
+    <section
+      class="band"
 
-      <p>
-        Earoptica explores how art can intervene in technological,
-        ecological and societal transformation.
-      </p>
+      data-label="PROGRAMME"
+
+      data-font="archivo"
+
+      data-speed="40"
+
+      data-direction="-1"
+
+      data-bg="#ff0000"
+
+      data-text="#000000"
+
+      data-href="programme.html"
+    >
+
+
+      <div class="band-under">
+
+        <div class="band-under-content">
+
+          <span class="under-title">
+            PROGRAMME
+          </span>
+
+          <span class="under-info">
+            EXHIBITIONS · SCREENINGS · TALKS · PUBLIC INTERVENTIONS
+          </span>
+
+          <span class="under-open">
+            ENTER →
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <canvas class="band-canvas"></canvas>
+
+      <div class="band-hit"></div>
+
 
     </section>
 
 
-    <nav class="bands" aria-label="Earoptica navigation">
-
-
-      <!-- PROGRAMME -->
-
-      <section
-        class="band"
-        data-label="PROGRAMME"
-        data-font="sans"
-        data-speed="42"
-        data-direction="-1"
-      >
-
-        <div class="band-under">
-
-          <div class="band-under-inner">
-
-            <a href="#programme">
-              Programme
-            </a>
-
-            <span>Exhibitions</span>
-            <span>Screenings</span>
-            <span>Talks</span>
-
-          </div>
-
-        </div>
-
-        <canvas class="band-canvas"></canvas>
-
-        <div class="band-hit"></div>
-
-      </section>
 
 
 
-      <!-- ARTISTS -->
+    <!-- ARTISTS -->
 
-      <section
-        class="band"
-        data-label="ARTISTS"
-        data-font="serif"
-        data-speed="31"
-        data-direction="1"
-      >
 
-        <div class="band-under">
+    <section
+      class="band"
 
-          <div class="band-under-inner">
+      data-label="ARTISTS"
 
-            <a href="#artists">
-              JODI
-            </a>
+      data-font="space"
 
-            <span>+ participating artists</span>
+      data-speed="31"
 
-          </div>
+      data-direction="1"
+
+      data-bg="#0000ff"
+
+      data-text="#000000"
+
+      data-href="artists.html"
+    >
+
+
+      <div class="band-under">
+
+        <div class="band-under-content">
+
+          <span class="under-title">
+            ARTISTS
+          </span>
+
+          <span class="under-info">
+            JODI · PARTICIPATING ARTISTS · CONTRIBUTORS
+          </span>
+
+          <span class="under-open">
+            ENTER →
+          </span>
 
         </div>
 
-        <canvas class="band-canvas"></canvas>
+      </div>
 
-        <div class="band-hit"></div>
 
-      </section>
+      <canvas class="band-canvas"></canvas>
 
-
-
-      <!-- LOCATIONS -->
-
-      <section
-        class="band"
-        data-label="LOCATIONS"
-        data-font="mono"
-        data-speed="24"
-        data-direction="-1"
-      >
-
-        <div class="band-under">
-
-          <div class="band-under-inner">
-
-            <a href="#locations">
-              S.M.A.K.
-            </a>
-
-            <span>KASK</span>
-            <span>LUCA</span>
-            <span>GHENT</span>
-
-          </div>
-
-        </div>
-
-        <canvas class="band-canvas"></canvas>
-
-        <div class="band-hit"></div>
-
-      </section>
-
-
-
-      <!-- RESEARCH -->
-
-      <section
-        class="band"
-        data-label="RESEARCH"
-        data-font="condensed"
-        data-speed="50"
-        data-direction="1"
-      >
-
-        <div class="band-under">
-
-          <div class="band-under-inner">
-
-            <a href="#research">
-              Technology
-            </a>
-
-            <span>Ecology</span>
-            <span>Public Space</span>
-            <span>Digital Culture</span>
-
-          </div>
-
-        </div>
-
-        <canvas class="band-canvas"></canvas>
-
-        <div class="band-hit"></div>
-
-      </section>
-
-
-
-      <!-- ABOUT -->
-
-      <section
-        class="band"
-        data-label="ABOUT"
-        data-font="wide"
-        data-speed="20"
-        data-direction="-1"
-      >
-
-        <div class="band-under">
-
-          <div class="band-under-inner">
-
-            <a href="#about">
-              About Earoptica
-            </a>
-
-            <span>Partners</span>
-            <span>Contact</span>
-
-          </div>
-
-        </div>
-
-        <canvas class="band-canvas"></canvas>
-
-        <div class="band-hit"></div>
-
-      </section>
-
-
-
-      <!-- LAB -->
-
-      <section
-        class="band"
-        data-label="LAB"
-        data-font="pixel"
-        data-speed="58"
-        data-direction="1"
-      >
-
-        <div class="band-under">
-
-          <div class="band-under-inner">
-
-            <a href="#lab">
-              LAB 01
-            </a>
-
-            <span>Pixel Migration</span>
-            <span>Browser Experiments</span>
-
-          </div>
-
-        </div>
-
-        <canvas class="band-canvas"></canvas>
-
-        <div class="band-hit"></div>
-
-      </section>
-
-    </nav>
-
-
-    <div class="touch-note">
-      TOUCH A BAND TO OPEN IT · TAP THE REVEALED LINK TO ENTER
-    </div>
-
-
-
-    <!-- CONTENT -->
-
-
-    <section class="content">
-
-
-      <article
-        class="content-block"
-        id="programme"
-      >
-
-        <div class="content-index">
-          01
-        </div>
-
-        <div>
-
-          <h2>
-            Programme
-          </h2>
-
-          <p class="content-lead">
-            Exhibitions, screenings, seminars, artist talks,
-            publications and public interventions unfold across
-            Ghent from March to June 2027.
-          </p>
-
-          <p>
-            The complete programme will be added here as dates
-            and locations are confirmed.
-          </p>
-
-        </div>
-
-      </article>
-
-
-
-      <article
-        class="content-block"
-        id="artists"
-      >
-
-        <div class="content-index">
-          02
-        </div>
-
-        <div>
-
-          <h2>
-            Artists
-          </h2>
-
-          <p class="content-lead">
-            JODI — Joan Heemskerk &amp; Dirk Paesmans.
-          </p>
-
-          <p>
-            Further participating artists and contributors
-            will be announced as the programme develops.
-          </p>
-
-        </div>
-
-      </article>
-
-
-
-      <article
-        class="content-block"
-        id="locations"
-      >
-
-        <div class="content-index">
-          03
-        </div>
-
-        <div>
-
-          <h2>
-            Locations
-          </h2>
-
-          <p class="content-lead">
-            Earoptica is conceived as a city-wide festival
-            rather than a single venue exhibition.
-          </p>
-
-          <p>
-            Locations and route information will appear here.
-          </p>
-
-        </div>
-
-      </article>
-
-
-
-      <article
-        class="content-block"
-        id="research"
-      >
-
-        <div class="content-index">
-          04
-        </div>
-
-        <div>
-
-          <h2>
-            Research
-          </h2>
-
-          <p class="content-lead">
-            Technology is not treated as neutral infrastructure,
-            but as a social field that can be observed,
-            questioned and reclaimed.
-          </p>
-
-          <p>
-            Earoptica connects media art, ecological transformation,
-            public space and digital self-determination.
-          </p>
-
-        </div>
-
-      </article>
-
-
-
-      <article
-        class="content-block"
-        id="about"
-      >
-
-        <div class="content-index">
-          05
-        </div>
-
-        <div>
-
-          <h2>
-            About
-          </h2>
-
-          <p class="content-lead">
-            Earoptica ’27 is a city-wide festival for media arts
-            in Ghent.
-          </p>
-
-          <p>
-            The project brings artists, cultural institutions,
-            researchers and citizens together around technological,
-            ecological and societal transformation.
-          </p>
-
-        </div>
-
-      </article>
-
-
-
-      <article
-        class="content-block"
-        id="lab"
-      >
-
-        <div class="content-index">
-          06
-        </div>
-
-        <div>
-
-          <h2>
-            Lab
-          </h2>
-
-          <p class="content-lead">
-            Earoptica Lab is the experimental layer of the project:
-            browser works, interface studies and prototypes
-            developed alongside the festival.
-          </p>
-
-          <p>
-            LAB 01 — Pixel Migration can later be linked here
-            as an autonomous digital experiment.
-          </p>
-
-        </div>
-
-      </article>
+      <div class="band-hit"></div>
 
 
     </section>
+
+
+
+
+
+    <!-- LOCATIONS -->
+
+
+    <section
+      class="band"
+
+      data-label="LOCATIONS"
+
+      data-font="condensed"
+
+      data-speed="24"
+
+      data-direction="-1"
+
+      data-bg="#ffff00"
+
+      data-text="#000000"
+
+      data-href="locations.html"
+    >
+
+
+      <div class="band-under">
+
+        <div class="band-under-content">
+
+          <span class="under-title">
+            LOCATIONS
+          </span>
+
+          <span class="under-info">
+            GHENT · S.M.A.K. · CITY-WIDE
+          </span>
+
+          <span class="under-open">
+            ENTER →
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <canvas class="band-canvas"></canvas>
+
+      <div class="band-hit"></div>
+
+
+    </section>
+
+
+
+
+
+    <!-- RESEARCH -->
+
+
+    <section
+      class="band"
+
+      data-label="RESEARCH"
+
+      data-font="inter"
+
+      data-speed="46"
+
+      data-direction="1"
+
+      data-bg="#000000"
+
+      data-text="#ffffff"
+
+      data-href="research.html"
+    >
+
+
+      <div class="band-under">
+
+        <div class="band-under-content">
+
+          <span class="under-title">
+            RESEARCH
+          </span>
+
+          <span class="under-info">
+            TECHNOLOGY · ECOLOGY · PUBLIC SPACE · DIGITAL CULTURE
+          </span>
+
+          <span class="under-open">
+            ENTER →
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <canvas class="band-canvas"></canvas>
+
+      <div class="band-hit"></div>
+
+
+    </section>
+
+
+
+
+
+    <!-- ABOUT -->
+
+
+    <section
+      class="band"
+
+      data-label="ABOUT"
+
+      data-font="space"
+
+      data-speed="20"
+
+      data-direction="-1"
+
+      data-bg="#ffffff"
+
+      data-text="#000000"
+
+      data-href="about.html"
+    >
+
+
+      <div class="band-under">
+
+        <div class="band-under-content">
+
+          <span class="under-title">
+            ABOUT
+          </span>
+
+          <span class="under-info">
+            EAROPTICA ’27 · GHENT · MARCH — JUNE 2027
+          </span>
+
+          <span class="under-open">
+            ENTER →
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <canvas class="band-canvas"></canvas>
+
+      <div class="band-hit"></div>
+
+
+    </section>
+
+
+
+
+
+    <!-- LAB -->
+
+
+    <section
+      class="band"
+
+      data-label="LAB"
+
+      data-font="mono"
+
+      data-speed="56"
+
+      data-direction="1"
+
+      data-bg="#00ff00"
+
+      data-text="#000000"
+
+      data-href="lab.html"
+    >
+
+
+      <div class="band-under">
+
+        <div class="band-under-content">
+
+          <span class="under-title">
+            LAB
+          </span>
+
+          <span class="under-info">
+            DIGITAL EXPERIMENTS · PIXEL MIGRATION · PROTOTYPES
+          </span>
+
+          <span class="under-open">
+            ENTER →
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <canvas class="band-canvas"></canvas>
+
+      <div class="band-hit"></div>
+
+
+    </section>
+
 
   </main>
 
 
-  <footer class="site-footer">
-
-    <a href="#top">
-      EAROPTICA ’27 ↑
-    </a>
-
-    <span>
-      GHENT
-    </span>
-
-  </footer>
-
-
 </body>
+
 </html>
