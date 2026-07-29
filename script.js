@@ -1428,7 +1428,6 @@ function flattenWave() {
   ================================== */
 
 
-  function easeWave() {
 
 
     /*
