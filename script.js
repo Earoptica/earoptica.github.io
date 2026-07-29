@@ -1074,7 +1074,7 @@
   ---------------------------------- */
 
 
- function flattenWave() {
+function flattenWave() {
 
   wave.targetIndex = null;
   wave.index = null;
