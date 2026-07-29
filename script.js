@@ -1074,21 +1074,18 @@
   ---------------------------------- */
 
 
-  function flattenWave() {
+ function flattenWave() {
 
+  wave.targetIndex = null;
+  wave.index = null;
 
-    wave.targetIndex =
-      null;
+  wave.targetRadius = 0;
+  wave.radius = 0;
 
+  wave.targetLift = 0;
+  wave.lift = 0;
 
-    wave.targetRadius =
-      0;
-
-
-    wave.targetLift =
-      0;
-
-  }
+}
 
 
 
