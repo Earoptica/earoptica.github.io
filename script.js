@@ -67,7 +67,7 @@
 
 
   /* ----------------------------------
-     STACKED WAVE
+     STACKED PRESSURE WAVE
   ---------------------------------- */
 
   function createStackWave(
@@ -83,7 +83,7 @@
     for (const band of instances) {
 
 
-      /* BANDS BELOW ACTIVE BAND */
+      /* bands below active band */
 
       if (band.index > activeIndex) {
 
@@ -141,7 +141,10 @@
 
 
 
-      /* pressure weakens upward */
+      /*
+      Pressure becomes weaker
+      as it travels upward.
+      */
 
       const liftDecay =
         Math.pow(
@@ -171,11 +174,9 @@
 
 
       /*
-      This is the band directly
-      underneath.
-
-      Its colour AND typography
-      become visible inside the push.
+      The band immediately underneath
+      is the physical source pushing
+      through this layer.
       */
 
       band.pushSource =
@@ -221,7 +222,7 @@
 
 
   /* ==================================
-     BAND
+     BAND CLASS
   ================================== */
 
   class MovingBand {
@@ -358,7 +359,7 @@
 
 
 
-      /* PRESSURE */
+      /* PRESSURE POINT */
 
       this.pointer = {
 
@@ -395,6 +396,8 @@
         performance.now();
 
 
+
+      /* bind */
 
       this.onResize =
         this.onResize.bind(this);
@@ -663,7 +666,7 @@
 
 
     /* ----------------------------------
-       POINTER
+       POINTER POSITION
     ---------------------------------- */
 
     localPoint(event) {
@@ -691,6 +694,10 @@
     }
 
 
+
+    /* ----------------------------------
+       HOVER ENTER
+    ---------------------------------- */
 
     onPointerEnter(event) {
 
@@ -726,6 +733,10 @@
 
 
 
+    /* ----------------------------------
+       POINTER MOVE
+    ---------------------------------- */
+
     onPointerMove(event) {
 
 
@@ -737,6 +748,8 @@
         p.y;
 
 
+
+      /* TOUCH */
 
       if (
         event.pointerType === "touch"
@@ -786,6 +799,8 @@
       }
 
 
+      /* MOUSE */
+
       else {
 
 
@@ -808,6 +823,10 @@
     }
 
 
+
+    /* ----------------------------------
+       LEAVE
+    ---------------------------------- */
 
     onPointerLeave(event) {
 
@@ -836,6 +855,10 @@
     }
 
 
+
+    /* ----------------------------------
+       TOUCH START
+    ---------------------------------- */
 
     onPointerDown(event) {
 
@@ -893,6 +916,10 @@
 
 
 
+    /* ----------------------------------
+       TOUCH RELEASE
+    ---------------------------------- */
+
     onPointerUp(event) {
 
 
@@ -923,6 +950,8 @@
       if (wasTap) {
 
 
+        /* SECOND TAP = OPEN */
+
         if (
 
           selectedBand === this
@@ -947,6 +976,9 @@
 
         }
 
+
+
+        /* FIRST TAP = SELECT */
 
         selectedBand =
           this;
@@ -992,6 +1024,10 @@
 
 
 
+    /* ----------------------------------
+       DESKTOP CLICK
+    ---------------------------------- */
+
     onClick(event) {
 
 
@@ -1017,6 +1053,8 @@
 
 
 
+      /* SECOND CLICK = OPEN */
+
       if (
 
         selectedBand === this
@@ -1041,6 +1079,9 @@
 
       }
 
+
+
+      /* FIRST CLICK = SELECT */
 
       selectedBand =
         this;
@@ -1098,7 +1139,7 @@
 
 
     /* ----------------------------------
-       WAVE
+       WAVE SIZE
     ---------------------------------- */
 
     getTargetRadius(
@@ -1178,6 +1219,10 @@
 
 
 
+    /* ----------------------------------
+       CURVE
+    ---------------------------------- */
+
     liftAtX(x) {
 
 
@@ -1251,6 +1296,10 @@
 
 
 
+    /* ----------------------------------
+       ACTIVE UNDER-LAYER
+    ---------------------------------- */
+
     isExposedPoint(x, y) {
 
 
@@ -1291,12 +1340,20 @@
     easePointer() {
 
 
+      /*
+      This latency stays.
+
+      It affects the physical wave,
+      not the scrolling phase.
+      */
+
       const movementLatency =
         0.13;
 
 
       const deformationLatency =
         0.11;
+
 
 
       this.pointer.x +=
@@ -1312,6 +1369,7 @@
         movementLatency;
 
 
+
       this.pointer.y +=
 
         (
@@ -1325,6 +1383,7 @@
         movementLatency;
 
 
+
       this.pointer.radius +=
 
         (
@@ -1336,6 +1395,7 @@
         *
 
         deformationLatency;
+
 
 
       this.pointer.lift +=
@@ -1383,6 +1443,9 @@
         now;
 
 
+
+      /* TEXT SCROLL */
+
       if (
         !prefersReducedMotion
       ) {
@@ -1414,6 +1477,7 @@
       }
 
 
+
       this.easePointer();
 
 
@@ -1424,7 +1488,10 @@
 
 
     /* ----------------------------------
-       REPEATED TEXT
+       DRAW REPEATED TEXT
+
+       Uses the SOURCE band's own
+       offset, font, direction and speed.
     ---------------------------------- */
 
     drawRepeatedText(
@@ -1459,6 +1526,7 @@
         source.repeatWidth * 2;
 
 
+
       while (
         start > -source.repeatWidth
       ) {
@@ -1470,6 +1538,7 @@
       }
 
 
+
       while (
         start < -source.repeatWidth * 2
       ) {
@@ -1479,6 +1548,7 @@
           source.repeatWidth;
 
       }
+
 
 
       for (
@@ -1507,6 +1577,125 @@
         );
 
       }
+
+    }
+
+
+
+    /* ----------------------------------
+       DRAW SOURCE BAND THROUGH GAP
+
+       IMPORTANT:
+
+       This calculates where the lower
+       band ACTUALLY is right now.
+
+       So its text and colour remain
+       physically synchronized.
+    ---------------------------------- */
+
+    drawSourceThroughGap(
+      ctx,
+      source,
+      x,
+      currentWidth
+    ) {
+
+
+      /*
+      Use the source band's own
+      current eased deformation.
+
+      Not this band's deformation.
+      */
+
+      const sourceLift =
+        source.liftAtX(
+
+          x
+          +
+          currentWidth * 0.5
+
+        );
+
+
+
+      /*
+      Imagine the source band is directly
+      below this canvas.
+
+      Its normal top edge would begin
+      at y = this.h.
+
+      When it moves upward by sourceLift:
+
+      top = this.h - sourceLift
+      */
+
+      const sourceTop =
+        this.h
+        -
+        sourceLift;
+
+
+
+      /*
+      Fill the lower band's colour from
+      its true current top edge downward.
+      */
+
+      ctx.fillStyle =
+        source.background;
+
+
+      ctx.fillRect(
+
+        x,
+
+        sourceTop - 2,
+
+        currentWidth,
+
+        source.h + 4
+
+      );
+
+
+
+      /*
+      Same physical calculation
+      for its typography.
+
+      Original centre of lower band:
+
+      this.h + source.h / 2
+
+      Then subtract its ACTUAL lift.
+      */
+
+      const sourceTextY =
+
+        this.h
+
+        +
+
+        source.h * 0.5
+
+        -
+
+        sourceLift;
+
+
+
+      this.drawRepeatedText(
+
+        ctx,
+
+        source,
+
+        sourceTextY
+
+      );
 
     }
 
@@ -1544,11 +1733,10 @@
       );
 
 
-      /*
-      Smaller slices = smoother wave.
 
-      Slight overlap prevents
-      one-pixel seams.
+      /*
+      Slight overlap between slices
+      prevents pixel seams.
       */
 
       const sliceWidth =
@@ -1581,7 +1769,8 @@
           );
 
 
-        const lift =
+
+        const ownLift =
           this.liftAtX(
 
             x
@@ -1593,12 +1782,17 @@
           );
 
 
-        const y =
-          -lift;
+
+        const ownY =
+          -ownLift;
+
 
 
         ctx.save();
 
+
+
+        /* slice clipping */
 
         ctx.beginPath();
 
@@ -1611,7 +1805,7 @@
 
           currentWidth,
 
-          height + 1
+          height + 2
 
         );
 
@@ -1621,10 +1815,10 @@
 
 
         /* --------------------------------
-           PUSHED BAND:
+           PUSHED LAYER
 
-           draw the band underneath
-           inside the revealed wave.
+           Draw exact physical state
+           of band below.
         -------------------------------- */
 
         if (
@@ -1638,53 +1832,15 @@
         ) {
 
 
-          const source =
-            this.pushSource;
-
-
-          ctx.fillStyle =
-            source.background;
-
-
-          ctx.fillRect(
-
-            x,
-
-            0,
-
-            currentWidth,
-
-            height + 2
-
-          );
-
-
-
-          /*
-          Centre the lower band's
-          typography inside the exposed
-          section.
-
-          Because this happens per slice,
-          the text follows the curve too.
-          */
-
-          const exposedTextY =
-
-            height
-
-            -
-
-            lift * 0.5;
-
-
-          this.drawRepeatedText(
+          this.drawSourceThroughGap(
 
             ctx,
 
-            source,
+            this.pushSource,
 
-            exposedTextY
+            x,
+
+            currentWidth
 
           );
 
@@ -1693,7 +1849,7 @@
 
 
         /* --------------------------------
-           OWN BAND SURFACE
+           OWN COLOURED SURFACE
         -------------------------------- */
 
         ctx.fillStyle =
@@ -1704,17 +1860,22 @@
 
           x,
 
-          y,
+          ownY,
 
           currentWidth,
 
-          height + 2
+          height + 3
 
         );
 
 
 
-        /* OWN TEXT MOVES WITH SURFACE */
+        /* --------------------------------
+           OWN TEXT
+
+           Moves together with its
+           physical surface.
+        -------------------------------- */
 
         this.drawRepeatedText(
 
@@ -1722,7 +1883,7 @@
 
           this,
 
-          ownTextY + y
+          ownTextY + ownY
 
         );
 
@@ -1763,7 +1924,9 @@
 
 
 
-  /* WEB FONTS */
+  /* ----------------------------------
+     WAIT FOR WEB FONTS
+  ---------------------------------- */
 
   if (document.fonts) {
 
