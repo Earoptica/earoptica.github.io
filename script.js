@@ -106,7 +106,7 @@
   */
 
   const LIFT_DECAY =
-    0.78;
+    1;
 
 
 
