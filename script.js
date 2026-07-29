@@ -13,29 +13,21 @@
 
 
 
-  /* ----------------------------------
-     FONT SYSTEM
-  ---------------------------------- */
-
+  /* FONT SYSTEM */
 
   const FONT_MAP = {
-
 
     archivo: (size) =>
       `400 ${size}px "Archivo Black", Arial, sans-serif`,
 
-
     space: (size) =>
       `700 ${size}px "Space Grotesk", Arial, sans-serif`,
-
 
     condensed: (size) =>
       `900 ${size}px "Barlow Condensed", Arial, sans-serif`,
 
-
     inter: (size) =>
       `800 ${size}px "Inter", Arial, sans-serif`,
-
 
     mono: (size) =>
       `700 ${size}px "IBM Plex Mono", monospace`
@@ -44,21 +36,15 @@
 
 
 
-  /* ----------------------------------
-     CLOSE OTHER SELECTED BANDS
-  ---------------------------------- */
-
+  /* CLOSE OTHER SELECTED BANDS */
 
   function closeOtherBands(activeBand) {
 
-
     for (const band of instances) {
-
 
       if (band === activeBand) {
         continue;
       }
-
 
       band.pointer.pinned = false;
 
@@ -74,16 +60,9 @@
 
 
 
-  /* ==================================
-     MOVING BAND
-  ================================== */
-
-
   class MovingBand {
 
-
     constructor(el) {
-
 
       this.el = el;
 
@@ -94,13 +73,10 @@
 
       this.ctx =
         this.canvas.getContext(
-
           "2d",
-
           {
             alpha: true
           }
-
         );
 
 
@@ -110,7 +86,6 @@
 
 
       /* CONTENT */
-
 
       this.label =
         el.dataset.label || "EAROPTICA";
@@ -147,7 +122,6 @@
 
       /* CANVAS */
 
-
       this.w = 0;
 
       this.h = 0;
@@ -170,36 +144,23 @@
 
 
 
-      /* --------------------------------
-         INVISIBLE SPHERE
-      -------------------------------- */
-
+      /* INVISIBLE SPHERE */
 
       this.pointer = {
 
-
         x: 0,
-
         y: 0,
 
-
         targetX: 0,
-
         targetY: 0,
 
-
         radius: 0,
-
         targetRadius: 0,
 
-
         lift: 0,
-
         targetLift: 0,
 
-
         active: false,
-
         pinned: false
 
       };
@@ -214,9 +175,6 @@
       this.lastTime =
         performance.now();
 
-
-
-      /* BIND FUNCTIONS */
 
 
       this.onResize =
@@ -256,97 +214,60 @@
 
 
 
-    /* --------------------------------
-       EVENTS
-    -------------------------------- */
-
-
     bind() {
 
-
       window.addEventListener(
-
         "resize",
-
         this.onResize,
-
         {
           passive: true
         }
-
       );
 
 
-
       this.hit.addEventListener(
-
         "pointerenter",
-
         this.onPointerEnter
-
       );
 
 
       this.hit.addEventListener(
-
         "pointermove",
-
         this.onPointerMove
-
       );
 
 
       this.hit.addEventListener(
-
         "pointerleave",
-
         this.onPointerLeave
-
       );
 
 
       this.hit.addEventListener(
-
         "pointerdown",
-
         this.onPointerDown
-
       );
 
 
       this.hit.addEventListener(
-
         "pointerup",
-
         this.onPointerUp
-
       );
 
 
       this.hit.addEventListener(
-
         "pointercancel",
-
         this.onPointerUp
-
       );
 
 
       this.hit.addEventListener(
-
         "click",
-
         this.onClick
-
       );
 
     }
 
-
-
-    /* --------------------------------
-       RESIZE CANVAS
-    -------------------------------- */
 
 
     onResize() {
@@ -359,10 +280,8 @@
 
     resize() {
 
-
       const rect =
         this.el.getBoundingClientRect();
-
 
 
       this.w =
@@ -379,13 +298,11 @@
         );
 
 
-
       this.dpr =
         Math.min(
           window.devicePixelRatio || 1,
           2
         );
-
 
 
       this.canvas.width =
@@ -400,7 +317,6 @@
         );
 
 
-
       this.canvas.style.width =
         `${this.w}px`;
 
@@ -409,23 +325,14 @@
         `${this.h}px`;
 
 
-
       this.ctx.setTransform(
-
         this.dpr,
-
         0,
-
         0,
-
         this.dpr,
-
         0,
-
         0
-
       );
-
 
 
       this.fontSize =
@@ -444,29 +351,18 @@
         );
 
 
-
       this.updateTextMetrics();
 
     }
 
 
 
-    /* --------------------------------
-       FONT
-    -------------------------------- */
-
-
     getFont() {
 
-
       const fontFactory =
-
         FONT_MAP[this.fontKey]
-
         ||
-
         FONT_MAP.inter;
-
 
 
       return fontFactory(
@@ -479,20 +375,16 @@
 
     updateTextMetrics() {
 
-
       this.ctx.font =
         this.getFont();
-
 
 
       const separator =
         "     ·     ";
 
 
-
       this.unitText =
         `${this.label}${separator}`;
-
 
 
       this.repeatWidth =
@@ -510,37 +402,22 @@
 
 
 
-    /* --------------------------------
-       POINTER POSITION
-    -------------------------------- */
-
-
     localPoint(event) {
-
 
       const rect =
         this.el.getBoundingClientRect();
 
 
-
       return {
 
-
         x:
-
           event.clientX
-
           -
-
           rect.left,
 
-
         y:
-
           event.clientY
-
           -
-
           rect.top
 
       };
@@ -549,27 +426,17 @@
 
 
 
-    /* --------------------------------
-       MOUSE ENTER
-    -------------------------------- */
-
-
     onPointerEnter(event) {
-
 
       if (
         event.pointerType === "touch"
       ) {
-
         return;
-
       }
-
 
 
       const p =
         this.localPoint(event);
-
 
 
       this.pointer.targetX =
@@ -595,17 +462,10 @@
 
 
 
-    /* --------------------------------
-       POINTER MOVEMENT
-    -------------------------------- */
-
-
     onPointerMove(event) {
-
 
       const p =
         this.localPoint(event);
-
 
 
       this.pointer.targetX =
@@ -617,35 +477,22 @@
 
 
 
-      /* TOUCH DRAG */
-
-
       if (
         event.pointerType === "touch"
       ) {
 
-
         if (this.dragStart) {
 
-
           const dx =
-
             p.x
-
             -
-
             this.dragStart.x;
 
 
-
           const dy =
-
             p.y
-
             -
-
             this.dragStart.y;
-
 
 
           this.maxDrag =
@@ -665,15 +512,10 @@
 
 
         if (
-
           this.pointer.active
-
           ||
-
           this.pointer.pinned
-
         ) {
-
 
           this.pointer.targetRadius =
             this.getTargetRadius(true);
@@ -687,11 +529,7 @@
       }
 
 
-      /* DESKTOP */
-
-
       else {
-
 
         this.pointer.active =
           true;
@@ -710,33 +548,22 @@
 
 
 
-    /* --------------------------------
-       MOUSE LEAVES BAND
-    -------------------------------- */
-
-
     onPointerLeave(event) {
-
 
       if (
         event.pointerType === "touch"
       ) {
-
         return;
-
       }
-
 
 
       this.pointer.active =
         false;
 
 
-
       if (
         !this.pointer.pinned
       ) {
-
 
         this.pointer.targetRadius =
           0;
@@ -751,17 +578,10 @@
 
 
 
-    /* --------------------------------
-       POINTER DOWN
-    -------------------------------- */
-
-
     onPointerDown(event) {
-
 
       const p =
         this.localPoint(event);
-
 
 
       this.pointer.targetX =
@@ -772,17 +592,11 @@
         p.y;
 
 
-
       if (
-
         event.pointerType === "touch"
-
         ||
-
         event.pointerType === "pen"
-
       ) {
-
 
         this.dragStart =
           p;
@@ -804,7 +618,6 @@
           this.getTargetLift(true);
 
 
-
         this.hit.setPointerCapture?.(
           event.pointerId
         );
@@ -815,33 +628,19 @@
 
 
 
-    /* --------------------------------
-       TOUCH RELEASE
-    -------------------------------- */
-
-
     onPointerUp(event) {
 
-
       if (
-
         event.pointerType !== "touch"
-
         &&
-
         event.pointerType !== "pen"
-
       ) {
-
         return;
-
       }
-
 
 
       const p =
         this.localPoint(event);
-
 
 
       const wasTap =
@@ -851,24 +650,16 @@
 
       if (wasTap) {
 
-
-        /* SECOND TAP:
-           enter selected segment */
-
+        /* SECOND TAP = OPEN SEGMENT */
 
         if (
-
           this.pointer.pinned
-
           &&
-
           this.isExposedPoint(
             p.x,
             p.y
           )
-
         ) {
-
 
           this.navigate();
 
@@ -878,9 +669,7 @@
 
 
 
-        /* FIRST TAP:
-           select band */
-
+        /* FIRST TAP = SELECT BAND */
 
         closeOtherBands(this);
 
@@ -911,12 +700,7 @@
       }
 
 
-      /* DRAG:
-         follow finger, then close */
-
-
       else {
-
 
         this.pointer.pinned =
           false;
@@ -936,7 +720,6 @@
       }
 
 
-
       this.dragStart =
         null;
 
@@ -948,24 +731,13 @@
 
 
 
-    /* --------------------------------
-       DESKTOP CLICK
-    -------------------------------- */
-
-
     onClick(event) {
 
-
       if (
-
         event.pointerType === "touch"
-
         ||
-
         event.pointerType === "pen"
-
       ) {
-
 
         event.preventDefault();
 
@@ -974,34 +746,24 @@
       }
 
 
-
       const p =
         this.localPoint(event);
 
 
 
-      /* --------------------------------
-         BAND ALREADY SELECTED
-
-         Second click inside exposed
-         section opens the page.
-      -------------------------------- */
-
+      /* SECOND CLICK:
+         open selected segment */
 
       if (
         this.pointer.pinned
       ) {
 
-
         if (
-
           this.isExposedPoint(
             p.x,
             p.y
           )
-
         ) {
-
 
           this.navigate();
 
@@ -1013,13 +775,8 @@
 
 
 
-      /* --------------------------------
-         FIRST CLICK
-
-         Select this band and keep
-         deformation open.
-      -------------------------------- */
-
+      /* FIRST CLICK:
+         select band and keep it open */
 
       closeOtherBands(this);
 
@@ -1051,28 +808,15 @@
 
 
 
-    /* --------------------------------
-       NAVIGATION
-    -------------------------------- */
-
-
     navigate() {
 
-
       if (
-
         !this.href
-
         ||
-
         this.href === "#"
-
       ) {
-
         return;
-
       }
-
 
 
       window.location.href =
@@ -1082,76 +826,44 @@
 
 
 
-    /* --------------------------------
-       SPHERE SIZE
-    -------------------------------- */
-
-
     getTargetRadius(
       touch = false
     ) {
 
-
       const radius =
         Math.min(
-
           this.w * 0.22,
-
           210
-
         );
-
 
 
       if (touch) {
 
-
         return Math.max(
-
           90,
-
           radius * 0.82
-
         );
 
       }
 
 
-
       return Math.max(
-
         120,
-
         radius
-
       );
 
     }
 
 
 
-    /* --------------------------------
-       HOW HIGH BAND MOVES
-    -------------------------------- */
-
-
     getTargetLift(
       touch = false
     ) {
 
-
       const amount =
-
         touch
-
-        ?
-
-        this.h * 0.72
-
-        :
-
-        this.h * 0.75;
-
+          ? this.h * 0.72
+          : this.h * 0.75;
 
 
       return Math.max(
@@ -1159,11 +871,8 @@
         42,
 
         Math.min(
-
           this.h * 0.82,
-
           amount
-
         )
 
       );
@@ -1172,129 +881,76 @@
 
 
 
-    /* --------------------------------
-       CURVE
-    -------------------------------- */
-
-
     liftAtX(x) {
-
 
       const radius =
         Math.max(
-
           1,
-
           this.pointer.radius
-
         );
-
 
 
       const distance =
         Math.abs(
-
           x
-
           -
-
           this.pointer.x
-
         );
-
 
 
       if (
         distance >= radius
       ) {
-
-
         return 0;
-
       }
 
 
-
       const t =
-
         distance
-
         /
-
         radius;
 
 
-
       const curve =
-
         0.5
-
         +
-
         0.5
-
         *
-
         Math.cos(
-
           Math.PI * t
-
         );
 
 
-
       return (
-
         this.pointer.lift
-
         *
-
         Math.pow(
-
           curve,
-
           1.55
-
         )
-
       );
 
     }
 
 
 
-    /* --------------------------------
-       CHECK EXPOSED AREA
-    -------------------------------- */
-
-
     isExposedPoint(x, y) {
-
 
       const lift =
         this.liftAtX(x);
 
 
-
       if (
         lift < 25
       ) {
-
-
         return false;
-
       }
 
 
-
       const exposedTop =
-
         this.h
-
         -
-
         lift;
-
 
 
       return (
@@ -1305,13 +961,7 @@
 
 
 
-    /* --------------------------------
-       LATENCY
-    -------------------------------- */
-
-
     easePointer() {
-
 
       const movementLatency =
         0.13;
@@ -1321,88 +971,50 @@
         0.11;
 
 
-
       this.pointer.x +=
-
         (
-
           this.pointer.targetX
-
           -
-
           this.pointer.x
-
         )
-
         *
-
         movementLatency;
-
 
 
       this.pointer.y +=
-
         (
-
           this.pointer.targetY
-
           -
-
           this.pointer.y
-
         )
-
         *
-
         movementLatency;
 
 
-
       this.pointer.radius +=
-
         (
-
           this.pointer.targetRadius
-
           -
-
           this.pointer.radius
-
         )
-
         *
-
         deformationLatency;
 
 
-
       this.pointer.lift +=
-
         (
-
           this.pointer.targetLift
-
           -
-
           this.pointer.lift
-
         )
-
         *
-
         deformationLatency;
 
     }
 
 
 
-    /* --------------------------------
-       UPDATE
-    -------------------------------- */
-
-
     update(now) {
-
 
       const deltaTime =
         Math.min(
@@ -1410,63 +1022,42 @@
           0.05,
 
           (
-
             now
-
             -
-
             this.lastTime
-
           )
-
           /
-
           1000
 
         );
-
 
 
       this.lastTime =
         now;
 
 
-
-      /* HORIZONTAL SCROLL */
-
-
       if (
         !prefersReducedMotion
       ) {
 
-
         this.offset +=
-
           this.speed
-
           *
-
           this.direction
-
           *
-
           deltaTime;
 
       }
-
 
 
       if (
         this.repeatWidth > 0
       ) {
 
-
         this.offset %=
-
           this.repeatWidth;
 
       }
-
 
 
       this.easePointer();
@@ -1478,13 +1069,7 @@
 
 
 
-    /* --------------------------------
-       DRAW BAND
-    -------------------------------- */
-
-
     draw() {
-
 
       const ctx =
         this.ctx;
@@ -1498,29 +1083,20 @@
         this.h;
 
 
-
       ctx.clearRect(
-
         0,
-
         0,
-
         width,
-
         height
-
       );
-
 
 
       const sliceWidth =
         4;
 
 
-
       const textY =
         height * 0.5;
-
 
 
       ctx.textAlign =
@@ -1537,62 +1113,41 @@
 
 
       for (
-
         let x = 0;
-
         x < width;
-
         x += sliceWidth
-
       ) {
-
 
         const currentWidth =
           Math.min(
-
             sliceWidth + 1,
-
             width - x
-
           );
-
 
 
         const lift =
           this.liftAtX(
-
             x
-
             +
-
             currentWidth * 0.5
-
           );
-
 
 
         const y =
           -lift;
 
 
-
         ctx.save();
-
 
 
         ctx.beginPath();
 
 
         ctx.rect(
-
           x,
-
           0,
-
           currentWidth,
-
           height
-
         );
 
 
@@ -1602,53 +1157,34 @@
 
         /* BAND COLOR */
 
-
         ctx.fillStyle =
           this.background;
 
 
         ctx.fillRect(
-
           x,
-
           y,
-
           currentWidth,
-
           height + 2
-
         );
 
 
 
-        /* TEXT */
-
+        /* MOVING TEXT */
 
         ctx.fillStyle =
           this.textColor;
 
 
-
         let start =
-
           this.offset
-
           -
-
           this.repeatWidth * 2;
 
 
-
         while (
-
-          start
-
-          >
-
-          -this.repeatWidth
-
+          start > -this.repeatWidth
         ) {
-
 
           start -=
             this.repeatWidth;
@@ -1656,17 +1192,9 @@
         }
 
 
-
         while (
-
-          start
-
-          <
-
-          -this.repeatWidth * 2
-
+          start < -this.repeatWidth * 2
         ) {
-
 
           start +=
             this.repeatWidth;
@@ -1674,37 +1202,19 @@
         }
 
 
-
         for (
-
           let tx = start;
-
-          tx <
-
-          width
-
-          +
-
-          this.repeatWidth * 2;
-
-          tx +=
-            this.repeatWidth
-
+          tx < width + this.repeatWidth * 2;
+          tx += this.repeatWidth
         ) {
 
-
           ctx.fillText(
-
             this.unitText,
-
             tx,
-
             textY + y
-
           );
 
         }
-
 
 
         ctx.restore();
@@ -1717,46 +1227,31 @@
 
 
 
-  /* ==================================
-     CREATE BANDS
-  ================================== */
-
+  /* CREATE BANDS */
 
   const elements =
-
     [
       ...document.querySelectorAll(".band")
     ];
 
 
-
   instances =
-
     elements.map(
-
       element =>
-
         new MovingBand(element)
-
     );
 
 
 
-  /* ----------------------------------
-     WAIT FOR WEB FONTS
-  ---------------------------------- */
-
+  /* WAIT FOR WEB FONTS */
 
   if (document.fonts) {
 
-
     document.fonts.ready.then(() => {
-
 
       for (
         const band of instances
       ) {
-
 
         band.resize();
 
@@ -1768,23 +1263,17 @@
 
 
 
-  /* ==================================
-     ANIMATION LOOP
-  ================================== */
-
+  /* ANIMATION LOOP */
 
   function animate(now) {
-
 
     for (
       const band of instances
     ) {
 
-
       band.update(now);
 
     }
-
 
 
     requestAnimationFrame(
@@ -1792,7 +1281,6 @@
     );
 
   }
-
 
 
   requestAnimationFrame(
