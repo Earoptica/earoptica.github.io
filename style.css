@@ -279,18 +279,73 @@ It is invisible.
 */
 
 
-.band-hit {
+onClick(event) {
 
-  position: absolute;
+  if (
+    event.pointerType === "touch"
+    ||
+    event.pointerType === "pen"
+  ) {
+    event.preventDefault();
+    return;
+  }
 
-  inset: 0;
 
-  z-index: 3;
+  const p =
+    this.localPoint(event);
 
-  cursor: none;
+
+  /* BAND AL Geselecteerd:
+     klik in zichtbaar onderste deel = openen */
+
+  if (this.pointer.pinned) {
+
+    if (
+      this.isExposedPoint(
+        p.x,
+        p.y
+      )
+    ) {
+
+      this.navigate();
+
+      return;
+
+    }
+
+  }
+
+
+  /* EERSTE KLIK:
+     band selecteren en open houden */
+
+  closeOtherBands(this);
+
+
+  this.pointer.pinned =
+    true;
+
+
+  this.pointer.active =
+    true;
+
+
+  this.pointer.targetX =
+    p.x;
+
+
+  this.pointer.targetY =
+    p.y;
+
+
+  this.pointer.targetRadius =
+    this.getTargetRadius();
+
+
+  this.pointer.targetLift =
+    this.getTargetLift();
 
 }
-
 
 
 /* ----------------------------------
