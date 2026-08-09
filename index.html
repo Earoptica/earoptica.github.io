@@ -19,8 +19,6 @@
   <title>Earoptica ’27</title>
 
 
-  <!-- FONTS -->
-
   <link
     rel="preconnect"
     href="https://fonts.googleapis.com"
@@ -58,13 +56,7 @@
   <main class="interface">
 
 
-    <!--
-      WHITE INFORMATION LAYERS
-
-      These sit underneath the canvas.
-      They only become visible where
-      the active band is physically lifted.
-    -->
+    <!-- INFORMATION UNDER THE BANDS -->
 
 
     <div class="underlays">
@@ -204,10 +196,7 @@
     </div>
 
 
-
-    <!--
-      ONE CANVAS FOR THE ENTIRE INTERFACE
-    -->
+    <!-- ALL SIX BANDS ARE DRAWN HERE -->
 
 
     <canvas
@@ -217,17 +206,7 @@
 
 
 
-    <!--
-      INVISIBLE INTERACTION LAYER
-
-      The data here controls:
-      name
-      font
-      speed
-      direction
-      colour
-      destination
-    -->
+    <!-- INVISIBLE MENU / INTERACTION LAYER -->
 
 
     <nav
@@ -344,6 +323,18 @@
 
 
     </nav>
+
+
+
+    <!-- ROTATING SVG -->
+
+
+    <img
+      src="EAR1exe.svg"
+      class="rotor-svg"
+      alt=""
+      aria-hidden="true"
+    >
 
 
   </main>
