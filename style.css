@@ -4,9 +4,7 @@
 }
 
 
-/* ==================================
-   RESET
-================================== */
+/* RESET */
 
 * {
   box-sizing: border-box;
@@ -38,16 +36,13 @@ body {
     sans-serif;
 
   -webkit-font-smoothing: antialiased;
-
   text-rendering: geometricPrecision;
 
   user-select: none;
 }
 
 
-/* ==================================
-   FULL SCREEN INTERFACE
-================================== */
+/* FULL SCREEN INTERFACE */
 
 .interface {
   position: relative;
@@ -61,19 +56,12 @@ body {
 
   background: #ffffff;
 
-  /*
-  3D perspective for rotating SVG
-  */
-
   perspective: 1600px;
-
   perspective-origin: 40% 50%;
 }
 
 
-/* ==================================
-   INFORMATION UNDER THE BANDS
-================================== */
+/* INFORMATION UNDER THE BANDS */
 
 .underlays {
   position: absolute;
@@ -170,9 +158,7 @@ body {
 }
 
 
-/* ==================================
-   FULL SCREEN CANVAS
-================================== */
+/* FULL SCREEN CANVAS */
 
 #bands-canvas {
   position: absolute;
@@ -195,9 +181,7 @@ body {
 }
 
 
-/* ==================================
-   INVISIBLE INTERACTION LAYER
-================================== */
+/* INVISIBLE INTERACTION LAYER */
 
 .hit-layer {
   position: absolute;
@@ -213,10 +197,6 @@ body {
 
   margin: 0;
   padding: 0;
-
-  /*
-  no visible mouse cursor
-  */
 
   cursor: none;
 
@@ -238,10 +218,6 @@ body {
 }
 
 
-/* ==================================
-   KEYBOARD
-================================== */
-
 .band-hit:focus-visible {
   outline:
     1px solid
@@ -251,37 +227,18 @@ body {
 }
 
 
-/* ==================================
-   ROTATING EAROPTICA SVG
-================================== */
+/* ROTATING VECTOR */
 
 .rotor-svg {
   position: absolute;
 
-  /*
-  position around 2/5 of screen
-  */
-
   left: 40%;
   top: 50%;
 
-  /*
-  larger size
-  */
-
   width: min(56vw, 820px);
-
   height: auto;
 
-  /*
-  above the interface
-  */
-
   z-index: 10;
-
-  /*
-  waves and menu remain clickable
-  */
 
   pointer-events: none;
 
@@ -289,17 +246,13 @@ body {
 
   opacity: 1;
 
-  /*
-  force vector to black
-  */
+  /* volledig zwart */
 
   filter:
     brightness(0)
     saturate(100%);
 
-  /*
-  3D behaviour
-  */
+  /* 3D */
 
   transform-style: preserve-3d;
 
@@ -307,10 +260,7 @@ body {
     50%
     50%;
 
-  /*
-  endless rotation
-  around horizontal axis
-  */
+  /* eindeloze rotatie */
 
   animation:
     earopticaRotation3D
@@ -322,48 +272,44 @@ body {
 }
 
 
-/* ==================================
-   3D ROTATION
-================================== */
+/* ROTATION AROUND VERTICAL CENTER AXIS */
 
 @keyframes earopticaRotation3D {
 
   0% {
     transform:
       translate(-50%, -50%)
-      rotateX(0deg);
+      rotateY(0deg);
   }
 
   25% {
     transform:
       translate(-50%, -50%)
-      rotateX(90deg);
+      rotateY(90deg);
   }
 
   50% {
     transform:
       translate(-50%, -50%)
-      rotateX(180deg);
+      rotateY(180deg);
   }
 
   75% {
     transform:
       translate(-50%, -50%)
-      rotateX(270deg);
+      rotateY(270deg);
   }
 
   100% {
     transform:
       translate(-50%, -50%)
-      rotateX(360deg);
+      rotateY(360deg);
   }
 
 }
 
 
-/* ==================================
-   MOBILE
-================================== */
+/* MOBILE */
 
 @media (max-width: 760px) {
 
