@@ -328,4 +328,38 @@ body {
     width: 50vw;
   }
 
+  .rotor-svg {
+  position: absolute;
+
+  left: 40vw;
+  top: 50%;
+
+  width: min(34vw, 430px);
+  height: auto;
+
+  z-index: 4;
+  pointer-events: none;
+
+  transform-origin: 50% 50%;
+
+  animation: earopticaRotation 18s linear infinite;
+}
+
+
+@keyframes earopticaRotation {
+
+  from {
+    transform:
+      translate(-50%, -50%)
+      rotate(0deg);
+  }
+
+  to {
+    transform:
+      translate(-50%, -50%)
+      rotate(360deg);
+  }
+
+}
+  
 }
