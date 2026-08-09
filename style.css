@@ -200,7 +200,7 @@ body {
   margin: 0;
   padding: 0;
 
-  cursor: pointer;
+  cursor: none;
 
   touch-action: none;
 }
@@ -270,7 +270,7 @@ body {
    TOUCH
 ---------------------------------- */
 
-@media (hover: none), (pointer: coarse) {
+
 
   .hit-layer {
     cursor: default;
