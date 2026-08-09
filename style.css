@@ -4,7 +4,9 @@
 }
 
 
-/* RESET */
+/* ==================================
+   RESET
+================================== */
 
 * {
   box-sizing: border-box;
@@ -42,7 +44,9 @@ body {
 }
 
 
-/* FULL SCREEN INTERFACE */
+/* ==================================
+   FULL SCREEN INTERFACE
+================================== */
 
 .interface {
   position: relative;
@@ -57,11 +61,20 @@ body {
   background: #ffffff;
 
   perspective: 1600px;
-  perspective-origin: 40% 50%;
+
+  /*
+  3D perspectief vertrekt nu
+  vanuit de linker bovenhoek-zone
+  waar de SVG staat
+  */
+
+  perspective-origin: 16.66vw 16.66vh;
 }
 
 
-/* INFORMATION UNDER THE BANDS */
+/* ==================================
+   INFORMATION UNDER THE BANDS
+================================== */
 
 .underlays {
   position: absolute;
@@ -158,7 +171,9 @@ body {
 }
 
 
-/* FULL SCREEN CANVAS */
+/* ==================================
+   FULL SCREEN CANVAS
+================================== */
 
 #bands-canvas {
   position: absolute;
@@ -181,7 +196,9 @@ body {
 }
 
 
-/* INVISIBLE INTERACTION LAYER */
+/* ==================================
+   INVISIBLE INTERACTION LAYER
+================================== */
 
 .hit-layer {
   position: absolute;
@@ -227,16 +244,35 @@ body {
 }
 
 
-/* ROTATING VECTOR */
+/* ==================================
+   ROTATING SVG
+================================== */
 
 .rotor-svg {
   position: absolute;
 
-  left: 40%;
-  top: 50%;
+  /*
+  linker bovenhoek
+  */
 
-  width: min(56vw, 820px);
-  height: auto;
+  left: 0;
+  top: 0;
+
+  /*
+  exact hoogte van 2 van de 6 banden
+
+  = 2/6
+  = 1/3 van het scherm
+  */
+
+  height: 33.333vh;
+  height: 33.333dvh;
+
+  width: auto;
+
+  /*
+  boven de interface
+  */
 
   z-index: 10;
 
@@ -246,21 +282,23 @@ body {
 
   opacity: 1;
 
-  /* volledig zwart */
+  /*
+  volledige SVG wit maken
+  */
 
   filter:
     brightness(0)
-    saturate(100%);
+    invert(1);
 
-  /* 3D */
+  /*
+  draaien rond verticale
+  middenas van de SVG
+  */
 
   transform-style: preserve-3d;
 
   transform-origin:
-    50%
-    50%;
-
-  /* eindeloze rotatie */
+    50% 50%;
 
   animation:
     earopticaRotation3D
@@ -272,44 +310,43 @@ body {
 }
 
 
-/* ROTATION AROUND VERTICAL CENTER AXIS */
+/* ==================================
+   VERTICAL 3D ROTATION
+================================== */
 
 @keyframes earopticaRotation3D {
 
   0% {
     transform:
-      translate(-50%, -50%)
       rotateY(0deg);
   }
 
   25% {
     transform:
-      translate(-50%, -50%)
       rotateY(90deg);
   }
 
   50% {
     transform:
-      translate(-50%, -50%)
       rotateY(180deg);
   }
 
   75% {
     transform:
-      translate(-50%, -50%)
       rotateY(270deg);
   }
 
   100% {
     transform:
-      translate(-50%, -50%)
       rotateY(360deg);
   }
 
 }
 
 
-/* MOBILE */
+/* ==================================
+   MOBILE
+================================== */
 
 @media (max-width: 760px) {
 
@@ -342,17 +379,21 @@ body {
     perspective: 1200px;
 
     perspective-origin:
-      50%
-      50%;
+      16.66vw 16.66vh;
   }
 
 
+  /*
+  Ook op smartphone blijft hij
+  exact twee menubalken hoog.
+  */
+
   .rotor-svg {
-    left: 50%;
+    left: 0;
+    top: 0;
 
-    width: 76vw;
-
-    animation-duration: 14s;
+    height: 33.333dvh;
+    width: auto;
   }
 
 }
