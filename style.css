@@ -60,6 +60,14 @@ body {
   overflow: hidden;
 
   background: #ffffff;
+
+  /*
+  3D perspective for rotating SVG
+  */
+
+  perspective: 1600px;
+
+  perspective-origin: 40% 50%;
 }
 
 
@@ -206,6 +214,10 @@ body {
   margin: 0;
   padding: 0;
 
+  /*
+  no visible mouse cursor
+  */
+
   cursor: none;
 
   touch-action: none;
@@ -226,6 +238,10 @@ body {
 }
 
 
+/* ==================================
+   KEYBOARD
+================================== */
+
 .band-hit:focus-visible {
   outline:
     1px solid
@@ -236,82 +252,110 @@ body {
 
 
 /* ==================================
-   ROTATING VECTOR
+   ROTATING EAROPTICA SVG
 ================================== */
 
 .rotor-svg {
   position: absolute;
 
   /*
-  2/5 van het scherm
+  position around 2/5 of screen
   */
 
   left: 40%;
   top: 50%;
 
   /*
-  grootte
+  larger size
   */
 
-  width: min(34vw, 430px);
+  width: min(56vw, 820px);
 
   height: auto;
 
   /*
-  boven alle andere lagen
+  above the interface
   */
 
   z-index: 10;
 
   /*
-  zorgt ervoor dat de SVG
-  geen hover/click blokkeert
+  waves and menu remain clickable
   */
 
   pointer-events: none;
 
-  /*
-  rotatie rond het centrum
-  */
-
-  transform-origin: center center;
-
-  /*
-  eindeloze constante rotatie
-  */
-
-  animation:
-    earopticaRotation
-    18s
-    linear
-    infinite;
-
-  /*
-  expliciet zichtbaar
-  */
-
   display: block;
 
   opacity: 1;
+
+  /*
+  force vector to black
+  */
+
+  filter:
+    brightness(0)
+    saturate(100%);
+
+  /*
+  3D behaviour
+  */
+
+  transform-style: preserve-3d;
+
+  transform-origin:
+    50%
+    50%;
+
+  /*
+  endless rotation
+  around horizontal axis
+  */
+
+  animation:
+    earopticaRotation3D
+    14s
+    linear
+    infinite;
+
+  will-change: transform;
 }
 
 
 /* ==================================
-   ROTATION
+   3D ROTATION
 ================================== */
 
-@keyframes earopticaRotation {
+@keyframes earopticaRotation3D {
 
   0% {
     transform:
       translate(-50%, -50%)
-      rotate(0deg);
+      rotateX(0deg);
+  }
+
+  25% {
+    transform:
+      translate(-50%, -50%)
+      rotateX(90deg);
+  }
+
+  50% {
+    transform:
+      translate(-50%, -50%)
+      rotateX(180deg);
+  }
+
+  75% {
+    transform:
+      translate(-50%, -50%)
+      rotateX(270deg);
   }
 
   100% {
     transform:
       translate(-50%, -50%)
-      rotate(360deg);
+      rotateX(360deg);
   }
 
 }
@@ -348,10 +392,21 @@ body {
   }
 
 
+  .interface {
+    perspective: 1200px;
+
+    perspective-origin:
+      50%
+      50%;
+  }
+
+
   .rotor-svg {
     left: 50%;
 
-    width: 52vw;
+    width: 76vw;
+
+    animation-duration: 14s;
   }
 
 }
